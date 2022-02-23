@@ -5,26 +5,44 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
+	"os"
 
 	"github.com/steelx/extractlinks"
 )
 
-func main() {
-	baseURL := "https://www.trendyol.com/"
-
-	config := &tls.Config{
+var(
+	config = &tls.Config{
 		InsecureSkipVerify: true,
 	}
 
-	transport := &http.Transport{
+	transport = &http.Transport{
 		TLSClientConfig: config,
 	}
 
-	netClient := &http.Client{
+	netClient = &http.Client{
 		Transport: transport,
 	}
+)
 
-	respones, err := netClient.Get(baseURL)
+func main() {
+	arguments := os.Args[1:]
+	
+	if len(arguments) == 0 {
+		fmt.Println("Missing URL, e.g. go-webscrapper http://js.org/")
+		os.Exit(1)
+	}
+
+	baseURL := arguments[0]
+	fmt.Println("baseURL", baseURL)
+
+	crawlUrl(baseURL)
+}
+
+
+func crawlUrl(href string) {
+	fmt.Printf("Crawling url -> %v \n", href)
+	respones, err := netClient.Get(href)
 	if err != nil {
 		log.Fatal("cannot get baseUrl:", err)
 	}
@@ -36,8 +54,24 @@ func main() {
 	}
 
 	
-	for i, link := range links {
-		fmt.Printf("index %v -- link %+v \n", i, link)
+	for _, link := range links {
+		crawlUrl(toFixedURL(link.Href, href))
 	}
 
+}
+
+func toFixedURL(href, baseUrl string) string {
+	uri, err := url.Parse(href)
+	if err != nil {
+		return "cannot parse uri"
+	}
+	
+	base, err := url.Parse(baseUrl)
+	if err != nil {
+		return "cannot parse base url"
+	}
+
+	toFixedUri := base.ResolveReference(uri)
+
+	return toFixedUri.String()
 }
