@@ -23,24 +23,50 @@ var(
 	netClient = &http.Client{
 		Transport: transport,
 	}
+	queue = make(chan string)
+	hasVisited = make(map[string]bool)
 )
 
 func main() {
 	arguments := os.Args[1:]
 	
 	if len(arguments) == 0 {
-		fmt.Println("Missing URL, e.g. go-webscrapper http://js.org/")
+		fmt.Println("Missing URL, e.g. go-webscrapper https://www.trendyol.com/")
 		os.Exit(1)
 	}
 
-	baseURL := arguments[0]
-	fmt.Println("baseURL", baseURL)
+	baseURL:= arguments[0]
+	go func() {
+		queue <- baseURL
+	}()
 
-	crawlUrl(baseURL)
+	for href := range queue {
+		if !hasVisited[href] && isSameDomain(href, baseURL){
+			crawlUrl(href)
+		}
+		
+	}
 }
 
+func isSameDomain(href, baseUrl string) bool {
+	uri, err := url.Parse(href)
+	if err != nil {
+		return false
+	}
+	parentUri, err := url.Parse(baseUrl)
+	if err != nil {
+		return false
+	}
+
+	if uri.Host != parentUri.Host{
+		return false
+	}
+
+	return true 
+}
 
 func crawlUrl(href string) {
+	hasVisited[href] = true
 	fmt.Printf("Crawling url -> %v \n", href)
 	respones, err := netClient.Get(href)
 	if err != nil {
@@ -55,7 +81,11 @@ func crawlUrl(href string) {
 
 	
 	for _, link := range links {
-		crawlUrl(toFixedURL(link.Href, href))
+		absoluteURL := toFixedURL(link.Href, href)
+
+		go func() {
+			queue <- absoluteURL
+		}()
 	}
 
 }
