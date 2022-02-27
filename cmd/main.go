@@ -2,16 +2,19 @@ package main
 
 import (
 	"crypto/tls"
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 
+	"github.com/amirrmonfared/WebCrawler/internal/crawler"
+	"github.com/amirrmonfared/WebCrawler/util"
+	_ "github.com/lib/pq"
 	"github.com/steelx/extractlinks"
 )
 
-var(
+var (
 	config = &tls.Config{
 		InsecureSkipVerify: true,
 	}
@@ -23,46 +26,41 @@ var(
 	netClient = &http.Client{
 		Transport: transport,
 	}
-	queue = make(chan string)
+	queue      = make(chan string)
 	hasVisited = make(map[string]bool)
 )
 
 func main() {
+	config, err := util.LoadConfig(".")
+	if err != nil {
+		log.Fatal("cannot load config:", err)
+	}
+
+	conn, err := sql.Open(config.DBDriver, config.DBSource)
+	if err != nil {
+		log.Fatal("cannot connect to db:", err)
+	}
+	fmt.Println("connected to database:")
+
+	defer conn.Close()
 	arguments := os.Args[1:]
-	
+
 	if len(arguments) == 0 {
 		fmt.Println("Missing URL, e.g. go-webscrapper https://www.trendyol.com/")
 		os.Exit(1)
 	}
 
-	baseURL:= arguments[0]
+	baseURL := arguments[0]
 	go func() {
 		queue <- baseURL
 	}()
 
 	for href := range queue {
-		if !hasVisited[href] && isSameDomain(href, baseURL){
+		if !hasVisited[href] && crawler.IsSameDomain(href, baseURL) {
 			crawlUrl(href)
 		}
-		
-	}
-}
 
-func isSameDomain(href, baseUrl string) bool {
-	uri, err := url.Parse(href)
-	if err != nil {
-		return false
 	}
-	parentUri, err := url.Parse(baseUrl)
-	if err != nil {
-		return false
-	}
-
-	if uri.Host != parentUri.Host{
-		return false
-	}
-
-	return true 
 }
 
 func crawlUrl(href string) {
@@ -79,29 +77,12 @@ func crawlUrl(href string) {
 		log.Fatal("cannot extract links:", err)
 	}
 
-	
 	for _, link := range links {
-		absoluteURL := toFixedURL(link.Href, href)
+		absoluteURL := crawler.ToFixedURL(link.Href, href)
 
 		go func() {
 			queue <- absoluteURL
 		}()
 	}
 
-}
-
-func toFixedURL(href, baseUrl string) string {
-	uri, err := url.Parse(href)
-	if err != nil {
-		return "cannot parse uri"
-	}
-	
-	base, err := url.Parse(baseUrl)
-	if err != nil {
-		return "cannot parse base url"
-	}
-
-	toFixedUri := base.ResolveReference(uri)
-
-	return toFixedUri.String()
 }
