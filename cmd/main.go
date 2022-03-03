@@ -63,6 +63,10 @@ func main() {
 	}
 }
 
+
+// crawlUrl take links from href and crawling all url in the page
+// I used extractlink package to extract links from the html body 
+//also uses a goroutine to queue up an HTTP request for each link that has been crawled.
 func crawlUrl(href string) {
 	hasVisited[href] = true
 	fmt.Printf("Crawling url -> %v \n", href)
