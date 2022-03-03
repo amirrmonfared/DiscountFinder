@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/amirrmonfared/WebCrawler/util"
+	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries
