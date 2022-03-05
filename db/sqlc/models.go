@@ -17,7 +17,6 @@ type OnSale struct {
 	ID        int64     `json:"id"`
 	Link      string    `json:"link"`
 	Price     int64     `json:"price"`
-	SalePer   int64     `json:"salePer"`
 	CreatedAt time.Time `json:"created_at"`
 }
 

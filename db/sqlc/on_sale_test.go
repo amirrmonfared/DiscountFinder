@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateRandomRow(t *testing.T) First {
-	arg := CreateFirstParams{
+func CreateRandomRowOnSale(t *testing.T) OnSale {
+	arg := CreateOnSaleParams{
 		Link:  util.RandomLink(),
 		Price: util.RandomMoney(),
 	}
 
-	link, err := testQueries.CreateFirst(context.Background(), arg)
+	link, err := testQueries.CreateOnSale(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, link)
 
@@ -29,13 +29,13 @@ func CreateRandomRow(t *testing.T) First {
 	return link
 }
 
-func TestCreateRow(t *testing.T) {
+func TestCreateRowOnSale(t *testing.T) {
 	CreateRandomRow(t)
 }
 
-func TestGetFirst(t *testing.T) {
-	row1 := CreateRandomRow(t)
-	row2, err := testQueries.GetFirst(context.Background(), row1.ID)
+func TestGetOnSale(t *testing.T) {
+	row1 := CreateRandomRowOnSale(t)
+	row2, err := testQueries.GetOnSale(context.Background(), row1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -45,15 +45,15 @@ func TestGetFirst(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestUpdateFirst(t *testing.T) {
-	row1 := CreateRandomRow(t)
+func TestUpdateOnSale(t *testing.T) {
+	row1 := CreateRandomRowOnSale(t)
 
-	arg := UpdateFirstParams{
+	arg := UpdateOnSaleParams{
 		ID:    row1.ID,
 		Price: util.RandomMoney(),
 	}
 
-	row2, err := testQueries.UpdateFirst(context.Background(), arg)
+	row2, err := testQueries.UpdateOnSale(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -63,28 +63,28 @@ func TestUpdateFirst(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestDeleteFirst(t *testing.T) {
-	row1 := CreateRandomRow(t)
-	err := testQueries.DeleteFirst(context.Background(), row1.ID)
+func TestDeleteOnSale(t *testing.T) {
+	row1 := CreateRandomRowOnSale(t)
+	err := testQueries.DeleteOnSale(context.Background(), row1.ID)
 	require.NoError(t, err)
 
-	account2, err := testQueries.GetFirst(context.Background(), row1.ID)
+	account2, err := testQueries.GetOnSale(context.Background(), row1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
 }
 
-func TestListFirst(t *testing.T) {
+func TestListOnSale(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		CreateRandomRow(t)
+		CreateRandomRowOnSale(t)
 	}
 
-	arg := ListFirstParams{
+	arg := ListOnSaleParams{
 		Limit:  5,
 		Offset: 5,
 	}
 
-	accounts, err := testQueries.ListFirst(context.Background(), arg)
+	accounts, err := testQueries.ListOnSale(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, accounts, 5)
 

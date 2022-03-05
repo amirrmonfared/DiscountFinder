@@ -10,13 +10,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateRandomRow(t *testing.T) First {
-	arg := CreateFirstParams{
+func CreateRandomRowSecond(t *testing.T) Second {
+	arg := CreateSecondParams{
 		Link:  util.RandomLink(),
 		Price: util.RandomMoney(),
 	}
 
-	link, err := testQueries.CreateFirst(context.Background(), arg)
+	link, err := testQueries.CreateSecond(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, link)
 
@@ -29,13 +29,13 @@ func CreateRandomRow(t *testing.T) First {
 	return link
 }
 
-func TestCreateRow(t *testing.T) {
-	CreateRandomRow(t)
+func TestCreateRowSecond(t *testing.T) {
+	CreateRandomRowSecond(t)
 }
 
-func TestGetFirst(t *testing.T) {
-	row1 := CreateRandomRow(t)
-	row2, err := testQueries.GetFirst(context.Background(), row1.ID)
+func TestGetRowSecond(t *testing.T) {
+	row1 := CreateRandomRowSecond(t)
+	row2, err := testQueries.GetSecond(context.Background(), row1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -45,15 +45,15 @@ func TestGetFirst(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestUpdateFirst(t *testing.T) {
-	row1 := CreateRandomRow(t)
+func TestUpdateRowSecond(t *testing.T) {
+	row1 := CreateRandomRowSecond(t)
 
-	arg := UpdateFirstParams{
+	arg := UpdateSecondParams{
 		ID:    row1.ID,
 		Price: util.RandomMoney(),
 	}
 
-	row2, err := testQueries.UpdateFirst(context.Background(), arg)
+	row2, err := testQueries.UpdateSecond(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -63,28 +63,28 @@ func TestUpdateFirst(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestDeleteFirst(t *testing.T) {
-	row1 := CreateRandomRow(t)
-	err := testQueries.DeleteFirst(context.Background(), row1.ID)
+func TestDeleteRowSecond(t *testing.T) {
+	row1 := CreateRandomRowSecond(t)
+	err := testQueries.DeleteSecond(context.Background(), row1.ID)
 	require.NoError(t, err)
 
-	account2, err := testQueries.GetFirst(context.Background(), row1.ID)
+	account2, err := testQueries.GetSecond(context.Background(), row1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
 }
 
-func TestListFirst(t *testing.T) {
+func TestListAccountsSecond(t *testing.T) {
 	for i := 0; i < 10; i++ {
-		CreateRandomRow(t)
+		CreateRandomRowSecond(t)
 	}
 
-	arg := ListFirstParams{
+	arg := ListSecondParams{
 		Limit:  5,
 		Offset: 5,
 	}
 
-	accounts, err := testQueries.ListFirst(context.Background(), arg)
+	accounts, err := testQueries.ListSecond(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, accounts, 5)
 

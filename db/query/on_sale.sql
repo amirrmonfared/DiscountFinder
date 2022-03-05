@@ -1,0 +1,38 @@
+-- name: CreateOnSale :one
+INSERT INTO on_sale (
+  link,
+  price
+) VALUES (
+  $1, $2
+) RETURNING *;
+
+-- name: GetOnSale :one
+SELECT * FROM on_sale
+WHERE id = $1 LIMIT 1;
+
+-- name: GetOnSaleForUpdate :one
+SELECT * FROM on_sale
+WHERE id = $1 LIMIT 1
+FOR NO KEY UPDATE;
+
+-- name: UpdateOnSale :one
+UPDATE on_sale
+SET price = $2
+WHERE id = $1
+RETURNING *;
+
+-- name: ListOnSale :many
+SELECT * FROM on_sale
+ORDER BY id
+LIMIT $1
+OFFSET $2;
+
+-- name: AddOnSaleBalance :one
+UPDATE on_sale
+SET price = price + sqlc.arg(price)
+WHERE id = sqlc.arg(id)
+RETURNING *;
+
+-- name: DeleteOnSale :exec
+DELETE FROM on_sale
+WHERE id = $1;
