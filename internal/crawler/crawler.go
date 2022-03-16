@@ -1,6 +1,8 @@
 package crawler
 
-import "net/url"
+import (
+	"net/url"
+)
 
 // IsSameDomain is trying to determine if the URL is in the same domain as the base URL.
 func IsSameDomain(href, baseUrl string) bool {
