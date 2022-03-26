@@ -11,9 +11,9 @@ import (
 	"github.com/amirrmonfared/WebCrawler/internal/crawler"
 	"github.com/amirrmonfared/WebCrawler/util"
 	_ "github.com/lib/pq"
-	"github.com/steelx/extractlinks"
 )
 
+//to skip ssl certificate
 var (
 	config = &tls.Config{
 		InsecureSkipVerify: true,
@@ -46,7 +46,7 @@ func main() {
 	arguments := os.Args[1:]
 
 	if len(arguments) == 0 {
-		fmt.Println("Missing URL, e.g. go-webscrapper https://www.trendyol.com/")
+		fmt.Println("Missing URL, Just enter product page Url like : https://www.trendyol.com/erkek-t-shirt-x-g2-c73?pi=2")
 		os.Exit(1)
 	}
 
@@ -54,6 +54,8 @@ func main() {
 	go func() {
 		queue <- baseURL
 	}()
+
+
 
 	for href := range queue {
 		if !hasVisited[href] && crawler.IsSameDomain(href, baseURL) {
@@ -77,7 +79,7 @@ func CrawlUrl(href string) {
 	}
 	defer respones.Body.Close()
 
-	links, err := extractlinks.All(respones.Body)
+	links, err := crawler.ExtractLink(respones.Body)
 	if err != nil {
 		log.Fatal("cannot extract links:", err)
 	}

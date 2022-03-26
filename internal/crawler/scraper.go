@@ -10,7 +10,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
-func Scraper(href string) {
+func Scraper(href string) float64 {
 	resp, err := http.Get(href)
 
 	if err != nil {
@@ -31,25 +31,30 @@ func Scraper(href string) {
 
 	title := doc.Find("span.prc-dsc").Text()
 
-	fix := fixPrice(title)
-
+	fix, err := GetPrice(title)
+	if err != nil {
+		fmt.Println("cannot get price", err)
+	}
+	
 	fmt.Println(fix)
+
+	return fix
 }
 
-// fixPrice giving a htmltag from scrapper and turn it into a []float 64
-func fixPrice(htmlTag string) []float64 {
+// GetPrice giving a htmltag from scrapper and turn it into a float64
+func GetPrice(htmlTag string) (float64, error) {
 
 	trimmed := strings.Trim(htmlTag, "TL")
 
 	truePrice := strings.Split(trimmed, ",")
 
-	ints := make([]float64, len(truePrice))
+	priceSlice := make([]float64, len(truePrice))
 
 	for i, s := range truePrice {
-		ints[i], _ = strconv.ParseFloat(s, 64)
+		priceSlice[i], _ = strconv.ParseFloat(s, 64)
 	}
 
-	price := ints[:1]
+	price := priceSlice[0]
 
-	return price
+	return price, nil
 }
