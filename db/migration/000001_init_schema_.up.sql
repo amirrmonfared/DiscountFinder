@@ -1,5 +1,6 @@
 CREATE TABLE "first" (
   "id" bigserial NOT NULL,
+  "brand" varchar NOT NULL,
   "link" varchar PRIMARY KEY NOT NULL,
   "price" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
@@ -7,6 +8,7 @@ CREATE TABLE "first" (
 
 CREATE TABLE "second" (
   "id" bigserial NOT NULL,
+  "brand" varchar NOT NULL,
   "link" varchar PRIMARY KEY NOT NULL,
   "price" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
@@ -14,8 +16,10 @@ CREATE TABLE "second" (
 
 CREATE TABLE "on_sale" (
   "id" bigserial NOT NULL,
+  "brand" varchar NOT NULL,
   "link" varchar PRIMARY KEY NOT NULL,
   "price" bigint NOT NULL,
+  "saleper" bigint NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 

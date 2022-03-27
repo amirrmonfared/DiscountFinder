@@ -8,6 +8,7 @@ import (
 
 type First struct {
 	ID        int64     `json:"id"`
+	Brand     string    `json:"brand"`
 	Link      string    `json:"link"`
 	Price     int64     `json:"price"`
 	CreatedAt time.Time `json:"created_at"`
@@ -15,13 +16,16 @@ type First struct {
 
 type OnSale struct {
 	ID        int64     `json:"id"`
+	Brand     string    `json:"brand"`
 	Link      string    `json:"link"`
 	Price     int64     `json:"price"`
+	Saleper   int64     `json:"saleper"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
 type Second struct {
 	ID        int64     `json:"id"`
+	Brand     string    `json:"brand"`
 	Link      string    `json:"link"`
 	Price     int64     `json:"price"`
 	CreatedAt time.Time `json:"created_at"`

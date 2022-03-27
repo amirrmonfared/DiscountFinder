@@ -2,59 +2,46 @@ package crawler
 
 import (
 	"fmt"
-	"log"
-	"net/http"
-	"strconv"
-	"strings"
 
-	"github.com/PuerkitoBio/goquery"
+	"github.com/gocolly/colly"
 )
 
-func Scraper(href string) float64 {
-	resp, err := http.Get(href)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer resp.Body.Close()
-
-	if resp.StatusCode != 200 {
-		log.Fatalf("failed to fetch data: %d %s", resp.StatusCode, resp.Status)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	title := doc.Find("span.prc-dsc").Text()
-
-	fix, err := GetPrice(title)
-	if err != nil {
-		fmt.Println("cannot get price", err)
-	}
-	
-	fmt.Println(fix)
-
-	return fix
+type Product struct {
+	Brand string
+	Price string
+	URL   string
 }
 
-// GetPrice giving a htmltag from scrapper and turn it into a float64
-func GetPrice(htmlTag string) (float64, error) {
+func Scraper() {
+	// Instantiate default collector
+	collector := colly.NewCollector(
+		colly.AllowedDomains("trendyol.com", "www.trendyol.com"),
+		colly.MaxDepth(2),
+	)
 
-	trimmed := strings.Trim(htmlTag, "TL")
+	// On every a element which has href attribute call callback
+	collector.OnHTML(".p-card-wrppr", func(e *colly.HTMLElement) {
+		product := Product{}
+		product.Brand = e.ChildAttr(".prdct-desc-cntnr-wrppr span", "title")
+		product.Price = e.ChildText(".prc-box-dscntd")
+		product.URL = "https://trendyol.com" + e.ChildAttr(".p-card-chldrn-cntnr a", "href")
+		fmt.Println(product.Brand, product.Price, product.URL)
+	})
 
-	truePrice := strings.Split(trimmed, ",")
+	// Visit next page
+	collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
+		//fmt.Println("Next page link found:", e.Attr("href"))
+		e.Request.Visit(e.Attr("href"))
+	})
 
-	priceSlice := make([]float64, len(truePrice))
+	collector.OnResponse(func(r *colly.Response) {
+		fmt.Println("Status Code:", r.StatusCode)
+	})
 
-	for i, s := range truePrice {
-		priceSlice[i], _ = strconv.ParseFloat(s, 64)
-	}
+	collector.OnRequest(func(r *colly.Request) {
+		fmt.Println("Visiting", r.URL.String())
+	})
 
-	price := priceSlice[0]
-
-	return price, nil
+	// Start scraping on https://hackerspaces.org
+	collector.Visit("https://www.trendyol.com/erkek-t-shirt-x-g2-c73?pi=2")
 }

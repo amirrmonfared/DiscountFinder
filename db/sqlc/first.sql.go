@@ -7,23 +7,24 @@ import (
 	"context"
 )
 
-const addfirstBalance = `-- name: AddfirstBalance :one
+const addfirstPrice = `-- name: AddfirstPrice :one
 UPDATE first
 SET price = price + $1
 WHERE id = $2
-RETURNING id, link, price, created_at
+RETURNING id, brand, link, price, created_at
 `
 
-type AddfirstBalanceParams struct {
+type AddfirstPriceParams struct {
 	Price int64 `json:"price"`
 	ID    int64 `json:"id"`
 }
 
-func (q *Queries) AddfirstBalance(ctx context.Context, arg AddfirstBalanceParams) (First, error) {
-	row := q.db.QueryRowContext(ctx, addfirstBalance, arg.Price, arg.ID)
+func (q *Queries) AddfirstPrice(ctx context.Context, arg AddfirstPriceParams) (First, error) {
+	row := q.db.QueryRowContext(ctx, addfirstPrice, arg.Price, arg.ID)
 	var i First
 	err := row.Scan(
 		&i.ID,
+		&i.Brand,
 		&i.Link,
 		&i.Price,
 		&i.CreatedAt,
@@ -33,23 +34,26 @@ func (q *Queries) AddfirstBalance(ctx context.Context, arg AddfirstBalanceParams
 
 const createFirst = `-- name: CreateFirst :one
 INSERT INTO first (
+  brand,
   link,
   price
 ) VALUES (
-  $1, $2
-) RETURNING id, link, price, created_at
+  $1, $2, $3
+) RETURNING id, brand, link, price, created_at
 `
 
 type CreateFirstParams struct {
+	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price int64  `json:"price"`
 }
 
 func (q *Queries) CreateFirst(ctx context.Context, arg CreateFirstParams) (First, error) {
-	row := q.db.QueryRowContext(ctx, createFirst, arg.Link, arg.Price)
+	row := q.db.QueryRowContext(ctx, createFirst, arg.Brand, arg.Link, arg.Price)
 	var i First
 	err := row.Scan(
 		&i.ID,
+		&i.Brand,
 		&i.Link,
 		&i.Price,
 		&i.CreatedAt,
@@ -68,7 +72,7 @@ func (q *Queries) DeleteFirst(ctx context.Context, id int64) error {
 }
 
 const getFirst = `-- name: GetFirst :one
-SELECT id, link, price, created_at FROM first
+SELECT id, brand, link, price, created_at FROM first
 WHERE id = $1 LIMIT 1
 `
 
@@ -77,6 +81,7 @@ func (q *Queries) GetFirst(ctx context.Context, id int64) (First, error) {
 	var i First
 	err := row.Scan(
 		&i.ID,
+		&i.Brand,
 		&i.Link,
 		&i.Price,
 		&i.CreatedAt,
@@ -85,7 +90,7 @@ func (q *Queries) GetFirst(ctx context.Context, id int64) (First, error) {
 }
 
 const getFirstForUpdate = `-- name: GetFirstForUpdate :one
-SELECT id, link, price, created_at FROM first
+SELECT id, brand, link, price, created_at FROM first
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -95,6 +100,7 @@ func (q *Queries) GetFirstForUpdate(ctx context.Context, id int64) (First, error
 	var i First
 	err := row.Scan(
 		&i.ID,
+		&i.Brand,
 		&i.Link,
 		&i.Price,
 		&i.CreatedAt,
@@ -103,7 +109,7 @@ func (q *Queries) GetFirstForUpdate(ctx context.Context, id int64) (First, error
 }
 
 const listFirst = `-- name: ListFirst :many
-SELECT id, link, price, created_at FROM first
+SELECT id, brand, link, price, created_at FROM first
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -125,6 +131,7 @@ func (q *Queries) ListFirst(ctx context.Context, arg ListFirstParams) ([]First, 
 		var i First
 		if err := rows.Scan(
 			&i.ID,
+			&i.Brand,
 			&i.Link,
 			&i.Price,
 			&i.CreatedAt,
@@ -146,7 +153,7 @@ const updateFirst = `-- name: UpdateFirst :one
 UPDATE first
 SET price = $2
 WHERE id = $1
-RETURNING id, link, price, created_at
+RETURNING id, brand, link, price, created_at
 `
 
 type UpdateFirstParams struct {
@@ -159,6 +166,7 @@ func (q *Queries) UpdateFirst(ctx context.Context, arg UpdateFirstParams) (First
 	var i First
 	err := row.Scan(
 		&i.ID,
+		&i.Brand,
 		&i.Link,
 		&i.Price,
 		&i.CreatedAt,

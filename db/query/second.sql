@@ -1,9 +1,10 @@
 -- name: CreateSecond :one
 INSERT INTO second (
+  brand,
   link,
   price
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 ) RETURNING *;
 
 -- name: GetSecond :one
@@ -27,7 +28,7 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: AddSecondBalance :one
+-- name: AddSecondPrice :one
 UPDATE second
 SET price = price + sqlc.arg(price)
 WHERE id = sqlc.arg(id)

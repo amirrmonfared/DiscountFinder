@@ -1,9 +1,11 @@
 -- name: CreateOnSale :one
 INSERT INTO on_sale (
+  brand,
   link,
-  price
+  price,
+  saleper
 ) VALUES (
-  $1, $2
+  $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetOnSale :one
@@ -27,7 +29,7 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: AddOnSaleBalance :one
+-- name: AddOnSalePrice :one
 UPDATE on_sale
 SET price = price + sqlc.arg(price)
 WHERE id = sqlc.arg(id)

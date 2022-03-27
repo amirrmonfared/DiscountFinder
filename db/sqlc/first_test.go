@@ -12,21 +12,23 @@ import (
 
 func CreateRandomRow(t *testing.T) First {
 	arg := CreateFirstParams{
+		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
 		Price: util.RandomMoney(),
 	}
 
-	link, err := testQueries.CreateFirst(context.Background(), arg)
+	product, err := testQueries.CreateFirst(context.Background(), arg)
 	require.NoError(t, err)
-	require.NotEmpty(t, link)
+	require.NotEmpty(t, product)
 
-	require.Equal(t, arg.Link, link.Link)
-	require.Equal(t, arg.Price, link.Price)
+	require.Equal(t, arg.Brand, product.Brand)
+	require.Equal(t, arg.Link, product.Link)
+	require.Equal(t, arg.Price, product.Price)
 
-	require.NotZero(t, link.ID)
-	require.NotZero(t, link.CreatedAt)
+	require.NotZero(t, product.ID)
+	require.NotZero(t, product.CreatedAt)
 
-	return link
+	return product
 }
 
 func TestCreateRow(t *testing.T) {
@@ -40,6 +42,7 @@ func TestGetFirst(t *testing.T) {
 	require.NotEmpty(t, row2)
 
 	require.Equal(t, row1.ID, row2.ID)
+	require.Equal(t, row1.Brand, row2.Brand)
 	require.Equal(t, row1.Link, row2.Link)
 	require.Equal(t, row1.Price, row2.Price)
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
@@ -58,6 +61,7 @@ func TestUpdateFirst(t *testing.T) {
 	require.NotEmpty(t, row2)
 
 	require.Equal(t, row1.ID, row2.ID)
+	require.Equal(t, row1.Brand, row2.Brand)
 	require.Equal(t, row1.Link, row2.Link)
 	require.Equal(t, arg.Price, row2.Price)
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
