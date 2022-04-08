@@ -1,0 +1,76 @@
+package db
+
+import (
+	"context"
+	"database/sql"
+	"fmt"
+)
+
+type Store interface {
+	Querier
+	CreateProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error)
+}
+
+// SQLStore provides all functions to excute db queries
+type SQLStore struct {
+	db *sql.DB
+	*Queries
+}
+
+func NewStore(db *sql.DB) Store {
+	return &SQLStore{
+		db:      db,
+		Queries: New(db),
+	}
+}
+
+func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) error {
+	tx, err := store.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	q := New(tx)
+	err = fn(q)
+	if err != nil {
+		if rbErr := tx.Rollback(); rbErr != nil {
+			return fmt.Errorf("tx err: %v, rb err: %v", err, rbErr)
+		}
+		return err
+	}
+
+	return tx.Commit()
+}
+
+type CreateProductParams struct {
+	Brand string `json:"brand"`
+    Link  string `json:"link"`
+    Price string `json:"price"`
+}
+
+type CreateProductResult struct {
+	First First `json:"first"`
+}
+
+func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error) {
+	var result CreateProductResult
+
+	err := store.execTx(ctx, func(q *Queries) error {
+
+		var err error
+
+		result.First, err = q.CreateFirst(ctx, CreateFirstParams{
+			Brand: arg.Brand,
+			Link:  arg.Link,
+			Price: arg.Price,
+		})	
+		if err != nil {
+			return err
+		}
+		return err
+	})
+	
+	fmt.Println("Product saved")
+
+	return result, err
+}

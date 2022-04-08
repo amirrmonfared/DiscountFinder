@@ -15,8 +15,8 @@ RETURNING id, brand, link, price, created_at
 `
 
 type AddSecondPriceParams struct {
-	Price int64 `json:"price"`
-	ID    int64 `json:"id"`
+	Price string `json:"price"`
+	ID    int64  `json:"id"`
 }
 
 func (q *Queries) AddSecondPrice(ctx context.Context, arg AddSecondPriceParams) (Second, error) {
@@ -45,7 +45,7 @@ INSERT INTO second (
 type CreateSecondParams struct {
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
-	Price int64  `json:"price"`
+	Price string `json:"price"`
 }
 
 func (q *Queries) CreateSecond(ctx context.Context, arg CreateSecondParams) (Second, error) {
@@ -157,8 +157,8 @@ RETURNING id, brand, link, price, created_at
 `
 
 type UpdateSecondParams struct {
-	ID    int64 `json:"id"`
-	Price int64 `json:"price"`
+	ID    int64  `json:"id"`
+	Price string `json:"price"`
 }
 
 func (q *Queries) UpdateSecond(ctx context.Context, arg UpdateSecondParams) (Second, error) {
