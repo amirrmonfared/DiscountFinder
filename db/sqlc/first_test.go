@@ -14,7 +14,7 @@ func CreateRandomRow(t *testing.T) First {
 	arg := CreateFirstParams{
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
-		Price: util.RandomMoney(),
+		Price: util.RandomPriceString(4),
 	}
 
 	product, err := testQueries.CreateFirst(context.Background(), arg)
@@ -53,7 +53,7 @@ func TestUpdateFirst(t *testing.T) {
 
 	arg := UpdateFirstParams{
 		ID:    row1.ID,
-		Price: util.RandomMoney(),
+		Price: util.RandomPriceString(4),
 	}
 
 	row2, err := testQueries.UpdateFirst(context.Background(), arg)

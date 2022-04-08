@@ -15,8 +15,8 @@ RETURNING id, brand, link, price, saleper, created_at
 `
 
 type AddOnSalePriceParams struct {
-	Price int64 `json:"price"`
-	ID    int64 `json:"id"`
+	Price string `json:"price"`
+	ID    int64  `json:"id"`
 }
 
 func (q *Queries) AddOnSalePrice(ctx context.Context, arg AddOnSalePriceParams) (OnSale, error) {
@@ -47,7 +47,7 @@ INSERT INTO on_sale (
 type CreateOnSaleParams struct {
 	Brand   string `json:"brand"`
 	Link    string `json:"link"`
-	Price   int64  `json:"price"`
+	Price   string `json:"price"`
 	Saleper int64  `json:"saleper"`
 }
 
@@ -169,8 +169,8 @@ RETURNING id, brand, link, price, saleper, created_at
 `
 
 type UpdateOnSaleParams struct {
-	ID    int64 `json:"id"`
-	Price int64 `json:"price"`
+	ID    int64  `json:"id"`
+	Price string `json:"price"`
 }
 
 func (q *Queries) UpdateOnSale(ctx context.Context, arg UpdateOnSaleParams) (OnSale, error) {

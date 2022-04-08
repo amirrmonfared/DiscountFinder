@@ -15,7 +15,7 @@ func CreateRandomRowOnSale(t *testing.T) OnSale {
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
 	//TODO: add onsale percentage	
-		Price: util.RandomMoney(),
+		Price: util.RandomPriceString(4),
 	}
 
 	product, err := testQueries.CreateOnSale(context.Background(), arg)
@@ -54,7 +54,7 @@ func TestUpdateOnSale(t *testing.T) {
 
 	arg := UpdateOnSaleParams{
 		ID:    row1.ID,
-		Price: util.RandomMoney(),
+		Price: util.RandomPriceString(4),
 	}
 
 	row2, err := testQueries.UpdateOnSale(context.Background(), arg)

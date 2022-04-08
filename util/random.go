@@ -7,6 +7,7 @@ import (
 )
 
 const alphabet = "abcdefghijklmnopqrstuvwxyz"
+const priceString= "123456789"
 
 func init() {
 	rand.Seed(time.Now().Unix())
@@ -22,6 +23,18 @@ func RandomString(n int) string {
 
 	for i := 0; i < n; i++ {
 		c := alphabet[rand.Intn(k)]
+		sb.WriteByte(c)
+	}
+
+	return sb.String()
+}
+
+func RandomPriceString(n int) string {
+	var sb strings.Builder
+	k := len(priceString)
+
+	for i := 0; i < n; i++ {
+		c := priceString[rand.Intn(k)]
 		sb.WriteByte(c)
 	}
 
