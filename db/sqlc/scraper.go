@@ -17,9 +17,7 @@ type Product struct {
 
 var Products = make([]Product, 0, 200)
 
-
-func Scraper(webPage string, conn *sql.DB) {
-	
+func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	store := NewStore(conn)
 
 	// Instantiate default collector
@@ -64,4 +62,5 @@ func Scraper(webPage string, conn *sql.DB) {
 	// Start scraping on Trendyol.com
 	collector.Visit(webPage)
 
+	return collector, nil
 }
