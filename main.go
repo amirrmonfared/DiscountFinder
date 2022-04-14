@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/amirrmonfared/WebCrawler/api"
-	db "github.com/amirrmonfared/WebCrawler/db/sqlc"
-	"github.com/amirrmonfared/WebCrawler/util"
+	"github.com/amirrmonfared/DiscountFinder/api"
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
 )

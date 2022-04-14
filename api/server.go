@@ -1,7 +1,7 @@
 package api
 
 import (
-	db "github.com/amirrmonfared/WebCrawler/db/sqlc"
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gin-gonic/gin"
 )
 

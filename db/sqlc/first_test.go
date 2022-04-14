@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/amirrmonfared/WebCrawler/util"
+	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/stretchr/testify/require"
 )
 

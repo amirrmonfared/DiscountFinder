@@ -10,9 +10,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	mockdb "github.com/amirrmonfared/WebCrawler/db/mock"
-	db "github.com/amirrmonfared/WebCrawler/db/sqlc"
-	"github.com/amirrmonfared/WebCrawler/util"
+	mockdb "github.com/amirrmonfared/DiscountFinder/db/mock"
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gin-gonic/gin"
 	"github.com/golang/mock/gomock"
 	"github.com/lib/pq"
@@ -21,7 +21,7 @@ import (
 
 func randomFirstProductId() db.First {
 	return db.First{
-		ID: util.RandomInt(1, 5),
+		ID:    util.RandomInt(1, 5),
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
 		Price: util.RandomPriceString(5),

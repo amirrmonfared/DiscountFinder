@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/amirrmonfared/WebCrawler/util"
+	"github.com/amirrmonfared/DiscountFinder/util"
 	_ "github.com/lib/pq"
 )
 

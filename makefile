@@ -23,7 +23,7 @@ test:
 	go test -v -cover ./...
 
 mock:
-	mockgen -destination db/mock/store.go github.com/amirrmonfared/WebCrawler/db/sqlc Store
+	mockgen -destination db/mock/store.go github.com/amirrmonfared/DiscountFinder/db/sqlc Store
 
 root:
 	docker exec -it crawler /bin/sh
