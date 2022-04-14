@@ -59,7 +59,7 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateProductParam
 
 		var err error
 
-		result.First, err = q.CreateFirst(ctx, CreateFirstParams{
+		result.First, err = q.CreateFirstProduct(ctx, CreateFirstProductParams{
 			Brand: arg.Brand,
 			Link:  arg.Link,
 			Price: arg.Price,

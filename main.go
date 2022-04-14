@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/amirrmonfared/WebCrawler/api"
 	db "github.com/amirrmonfared/WebCrawler/db/sqlc"
 	"github.com/amirrmonfared/WebCrawler/util"
+	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
 )
 
@@ -27,16 +29,25 @@ func main() {
 	fmt.Println("connected to database")
 	fmt.Println("--------------------------------------")
 
-	db.Scraper(webPage, conn)
+	store := db.NewStore(conn)
+	server := api.NewServer(store)
 
-	//	store := db.NewStore(conn)
-	// server := api.NewServer(store)
+	go run(webPage, conn)
 
-	// err = server.Start(config.ServerAddress)
-	// if err != nil {
-	// 	log.Fatal("cannot start server:", err)
-	// }
+	err = server.Start(config.ServerAddress)
+	if err != nil {
+		log.Fatal("cannot start server:", err)
+	}
 
 	defer conn.Close()
 
+}
+
+func run(webPage string, conn *sql.DB) (*colly.Collector, error) {
+	scrap, err := db.Scraper(webPage, conn)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return scrap, nil
 }

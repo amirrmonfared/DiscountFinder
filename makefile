@@ -22,4 +22,16 @@ sqlc:
 test:
 	go test -v -cover ./...
 
-.PHONY: run	postgres createdb dropdb migrateup migratedown
+mock:
+	mockgen -destination db/mock/store.go github.com/amirrmonfared/WebCrawler/db/sqlc Store
+
+root:
+	docker exec -it crawler /bin/sh
+
+psql:
+	docker exec -it crawler psql -U root -d task
+
+db_schema: 
+	migrate create -ext sql -dir db/migration -seq init_schema
+
+.PHONY: run	postgres createdb dropdb migrateup migratedown sqlc mock test root psql db_schema

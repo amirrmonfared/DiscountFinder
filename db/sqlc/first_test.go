@@ -11,13 +11,13 @@ import (
 )
 
 func CreateRandomRow(t *testing.T) First {
-	arg := CreateFirstParams{
+	arg := CreateFirstProductParams{
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
 		Price: util.RandomPriceString(4),
 	}
 
-	product, err := testQueries.CreateFirst(context.Background(), arg)
+	product, err := testQueries.CreateFirstProduct(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, product)
 
@@ -35,9 +35,9 @@ func TestCreateRow(t *testing.T) {
 	CreateRandomRow(t)
 }
 
-func TestGetFirst(t *testing.T) {
+func TestGetFirstProduct(t *testing.T) {
 	row1 := CreateRandomRow(t)
-	row2, err := testQueries.GetFirst(context.Background(), row1.ID)
+	row2, err := testQueries.GetFirstProduct(context.Background(), row1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -48,15 +48,15 @@ func TestGetFirst(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestUpdateFirst(t *testing.T) {
+func TestUpdateFirstProduct(t *testing.T) {
 	row1 := CreateRandomRow(t)
 
-	arg := UpdateFirstParams{
+	arg := UpdateFirstProductParams{
 		ID:    row1.ID,
 		Price: util.RandomPriceString(4),
 	}
 
-	row2, err := testQueries.UpdateFirst(context.Background(), arg)
+	row2, err := testQueries.UpdateFirstProduct(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -67,12 +67,12 @@ func TestUpdateFirst(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestDeleteFirst(t *testing.T) {
+func TestDeleteFirstProduct(t *testing.T) {
 	row1 := CreateRandomRow(t)
-	err := testQueries.DeleteFirst(context.Background(), row1.ID)
+	err := testQueries.DeleteFirstProduct(context.Background(), row1.ID)
 	require.NoError(t, err)
 
-	account2, err := testQueries.GetFirst(context.Background(), row1.ID)
+	account2, err := testQueries.GetFirstProduct(context.Background(), row1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
@@ -83,12 +83,12 @@ func TestListFirst(t *testing.T) {
 		CreateRandomRow(t)
 	}
 
-	arg := ListFirstParams{
+	arg := ListFirstProductParams{
 		Limit:  5,
 		Offset: 5,
 	}
 
-	accounts, err := testQueries.ListFirst(context.Background(), arg)
+	accounts, err := testQueries.ListFirstProduct(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, accounts, 5)
 
