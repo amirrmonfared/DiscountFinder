@@ -1,4 +1,4 @@
--- name: CreateFirst :one
+-- name: CreateFirstProduct :one
 INSERT INTO first (
   brand,
   link,
@@ -7,33 +7,33 @@ INSERT INTO first (
   $1, $2, $3
 ) RETURNING *;
 
--- name: GetFirst :one
+-- name: GetFirstProduct :one
 SELECT * FROM first
 WHERE id = $1 LIMIT 1;
 
--- name: GetFirstForUpdate :one
+-- name: GetFirstProductForUpdate :one
 SELECT * FROM first
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE;
 
--- name: UpdateFirst :one
+-- name: UpdateFirstProduct :one
 UPDATE first
 SET price = $2
 WHERE id = $1
 RETURNING *;
 
--- name: ListFirst :many
+-- name: ListFirstProduct :many
 SELECT * FROM first
 ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: AddfirstPrice :one
+-- name: AddfirstProductPrice :one
 UPDATE first
 SET price = price + sqlc.arg(price)
 WHERE id = sqlc.arg(id)
 RETURNING *;
 
--- name: DeleteFirst :exec
+-- name: DeleteFirstProduct :exec
 DELETE FROM first
 WHERE id = $1;

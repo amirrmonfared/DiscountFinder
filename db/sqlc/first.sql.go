@@ -7,20 +7,20 @@ import (
 	"context"
 )
 
-const addfirstPrice = `-- name: AddfirstPrice :one
+const addfirstProductPrice = `-- name: AddfirstProductPrice :one
 UPDATE first
 SET price = price + $1
 WHERE id = $2
 RETURNING id, brand, link, price, created_at
 `
 
-type AddfirstPriceParams struct {
+type AddfirstProductPriceParams struct {
 	Price string `json:"price"`
 	ID    int64  `json:"id"`
 }
 
-func (q *Queries) AddfirstPrice(ctx context.Context, arg AddfirstPriceParams) (First, error) {
-	row := q.db.QueryRowContext(ctx, addfirstPrice, arg.Price, arg.ID)
+func (q *Queries) AddfirstProductPrice(ctx context.Context, arg AddfirstProductPriceParams) (First, error) {
+	row := q.db.QueryRowContext(ctx, addfirstProductPrice, arg.Price, arg.ID)
 	var i First
 	err := row.Scan(
 		&i.ID,
@@ -32,7 +32,7 @@ func (q *Queries) AddfirstPrice(ctx context.Context, arg AddfirstPriceParams) (F
 	return i, err
 }
 
-const createFirst = `-- name: CreateFirst :one
+const createFirstProduct = `-- name: CreateFirstProduct :one
 INSERT INTO first (
   brand,
   link,
@@ -42,14 +42,14 @@ INSERT INTO first (
 ) RETURNING id, brand, link, price, created_at
 `
 
-type CreateFirstParams struct {
+type CreateFirstProductParams struct {
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price string `json:"price"`
 }
 
-func (q *Queries) CreateFirst(ctx context.Context, arg CreateFirstParams) (First, error) {
-	row := q.db.QueryRowContext(ctx, createFirst, arg.Brand, arg.Link, arg.Price)
+func (q *Queries) CreateFirstProduct(ctx context.Context, arg CreateFirstProductParams) (First, error) {
+	row := q.db.QueryRowContext(ctx, createFirstProduct, arg.Brand, arg.Link, arg.Price)
 	var i First
 	err := row.Scan(
 		&i.ID,
@@ -61,23 +61,23 @@ func (q *Queries) CreateFirst(ctx context.Context, arg CreateFirstParams) (First
 	return i, err
 }
 
-const deleteFirst = `-- name: DeleteFirst :exec
+const deleteFirstProduct = `-- name: DeleteFirstProduct :exec
 DELETE FROM first
 WHERE id = $1
 `
 
-func (q *Queries) DeleteFirst(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, deleteFirst, id)
+func (q *Queries) DeleteFirstProduct(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteFirstProduct, id)
 	return err
 }
 
-const getFirst = `-- name: GetFirst :one
+const getFirstProduct = `-- name: GetFirstProduct :one
 SELECT id, brand, link, price, created_at FROM first
 WHERE id = $1 LIMIT 1
 `
 
-func (q *Queries) GetFirst(ctx context.Context, id int64) (First, error) {
-	row := q.db.QueryRowContext(ctx, getFirst, id)
+func (q *Queries) GetFirstProduct(ctx context.Context, id int64) (First, error) {
+	row := q.db.QueryRowContext(ctx, getFirstProduct, id)
 	var i First
 	err := row.Scan(
 		&i.ID,
@@ -89,14 +89,14 @@ func (q *Queries) GetFirst(ctx context.Context, id int64) (First, error) {
 	return i, err
 }
 
-const getFirstForUpdate = `-- name: GetFirstForUpdate :one
+const getFirstProductForUpdate = `-- name: GetFirstProductForUpdate :one
 SELECT id, brand, link, price, created_at FROM first
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
 
-func (q *Queries) GetFirstForUpdate(ctx context.Context, id int64) (First, error) {
-	row := q.db.QueryRowContext(ctx, getFirstForUpdate, id)
+func (q *Queries) GetFirstProductForUpdate(ctx context.Context, id int64) (First, error) {
+	row := q.db.QueryRowContext(ctx, getFirstProductForUpdate, id)
 	var i First
 	err := row.Scan(
 		&i.ID,
@@ -108,20 +108,20 @@ func (q *Queries) GetFirstForUpdate(ctx context.Context, id int64) (First, error
 	return i, err
 }
 
-const listFirst = `-- name: ListFirst :many
+const listFirstProduct = `-- name: ListFirstProduct :many
 SELECT id, brand, link, price, created_at FROM first
 ORDER BY id
 LIMIT $1
 OFFSET $2
 `
 
-type ListFirstParams struct {
+type ListFirstProductParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) ListFirst(ctx context.Context, arg ListFirstParams) ([]First, error) {
-	rows, err := q.db.QueryContext(ctx, listFirst, arg.Limit, arg.Offset)
+func (q *Queries) ListFirstProduct(ctx context.Context, arg ListFirstProductParams) ([]First, error) {
+	rows, err := q.db.QueryContext(ctx, listFirstProduct, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -149,20 +149,20 @@ func (q *Queries) ListFirst(ctx context.Context, arg ListFirstParams) ([]First, 
 	return items, nil
 }
 
-const updateFirst = `-- name: UpdateFirst :one
+const updateFirstProduct = `-- name: UpdateFirstProduct :one
 UPDATE first
 SET price = $2
 WHERE id = $1
 RETURNING id, brand, link, price, created_at
 `
 
-type UpdateFirstParams struct {
+type UpdateFirstProductParams struct {
 	ID    int64  `json:"id"`
 	Price string `json:"price"`
 }
 
-func (q *Queries) UpdateFirst(ctx context.Context, arg UpdateFirstParams) (First, error) {
-	row := q.db.QueryRowContext(ctx, updateFirst, arg.ID, arg.Price)
+func (q *Queries) UpdateFirstProduct(ctx context.Context, arg UpdateFirstProductParams) (First, error) {
+	row := q.db.QueryRowContext(ctx, updateFirstProduct, arg.ID, arg.Price)
 	var i First
 	err := row.Scan(
 		&i.ID,

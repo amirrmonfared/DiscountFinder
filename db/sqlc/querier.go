@@ -9,23 +9,23 @@ import (
 type Querier interface {
 	AddOnSalePrice(ctx context.Context, arg AddOnSalePriceParams) (OnSale, error)
 	AddSecondPrice(ctx context.Context, arg AddSecondPriceParams) (Second, error)
-	AddfirstPrice(ctx context.Context, arg AddfirstPriceParams) (First, error)
-	CreateFirst(ctx context.Context, arg CreateFirstParams) (First, error)
+	AddfirstProductPrice(ctx context.Context, arg AddfirstProductPriceParams) (First, error)
+	CreateFirstProduct(ctx context.Context, arg CreateFirstProductParams) (First, error)
 	CreateOnSale(ctx context.Context, arg CreateOnSaleParams) (OnSale, error)
 	CreateSecond(ctx context.Context, arg CreateSecondParams) (Second, error)
-	DeleteFirst(ctx context.Context, id int64) error
+	DeleteFirstProduct(ctx context.Context, id int64) error
 	DeleteOnSale(ctx context.Context, id int64) error
 	DeleteSecond(ctx context.Context, id int64) error
-	GetFirst(ctx context.Context, id int64) (First, error)
-	GetFirstForUpdate(ctx context.Context, id int64) (First, error)
+	GetFirstProduct(ctx context.Context, id int64) (First, error)
+	GetFirstProductForUpdate(ctx context.Context, id int64) (First, error)
 	GetOnSale(ctx context.Context, id int64) (OnSale, error)
 	GetOnSaleForUpdate(ctx context.Context, id int64) (OnSale, error)
 	GetSecond(ctx context.Context, id int64) (Second, error)
 	GetSecondForUpdate(ctx context.Context, id int64) (Second, error)
-	ListFirst(ctx context.Context, arg ListFirstParams) ([]First, error)
+	ListFirstProduct(ctx context.Context, arg ListFirstProductParams) ([]First, error)
 	ListOnSale(ctx context.Context, arg ListOnSaleParams) ([]OnSale, error)
 	ListSecond(ctx context.Context, arg ListSecondParams) ([]Second, error)
-	UpdateFirst(ctx context.Context, arg UpdateFirstParams) (First, error)
+	UpdateFirstProduct(ctx context.Context, arg UpdateFirstProductParams) (First, error)
 	UpdateOnSale(ctx context.Context, arg UpdateOnSaleParams) (OnSale, error)
 	UpdateSecond(ctx context.Context, arg UpdateSecondParams) (Second, error)
 }
