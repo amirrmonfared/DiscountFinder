@@ -1,5 +1,8 @@
 # WebCrawler
 
+## Overview
+The Project we're try to build is a discount finder from every website just with changing the html we want.
+
 ## Setup local development
 
 ### Install tools
