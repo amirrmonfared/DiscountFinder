@@ -5,15 +5,13 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/amirrmonfared/DiscountFinder/api"
-	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	scrap "github.com/amirrmonfared/DiscountFinder/packages/scraper"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
 )
 
-const webPage = "https://www.trendyol.com/erkek-t-shirt-x-g2-c73?pi=2"
+const webPage = "https://www.trendyol.com/elbise-x-c56"
 
 func main() {
 	config, err := util.LoadConfig(".")
@@ -30,15 +28,16 @@ func main() {
 	fmt.Println("connected to database")
 	fmt.Println("--------------------------------------")
 
-	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	scrap.Scraper2(conn)
+	// store := db.NewStore(conn)
+	// server := api.NewServer(store)
 
-	go run(webPage, conn)
+	// go run(webPage, conn)
 
-	err = server.Start(config.ServerAddress)
-	if err != nil {
-		log.Fatal("cannot start server:", err)
-	}
+	// err = server.Start(config.ServerAddress)
+	// if err != nil {
+	// 	log.Fatal("cannot start server:", err)
+	// }
 
 	defer conn.Close()
 

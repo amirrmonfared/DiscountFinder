@@ -77,10 +77,18 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateProductParam
 }
 
 func (store *SQLStore) LengthOfFirst(ctx context.Context) (int64, error) {
-	length ,err := store.GetLengthOfFirst(ctx)
-	if err != nil {
-		fmt.Println(err)
-	}
+	var result int64
 
-	return length, nil
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+
+		result, err = q.GetLengthOfFirst(ctx)
+		if err != nil{
+			return err
+		}
+		return err
+	})
+	fmt.Println(result)
+
+	return result, err
 }

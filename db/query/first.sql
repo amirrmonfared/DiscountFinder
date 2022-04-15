@@ -39,5 +39,5 @@ DELETE FROM first
 WHERE id = $1;
 
 -- name: GetLengthOfFirst :one
-SELECT count(*) 
-FROM second;
+SELECT count(id) 
+FROM first;

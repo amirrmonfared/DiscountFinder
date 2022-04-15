@@ -109,8 +109,8 @@ func (q *Queries) GetFirstProductForUpdate(ctx context.Context, id int64) (First
 }
 
 const getLengthOfFirst = `-- name: GetLengthOfFirst :one
-SELECT count(*) 
-FROM second
+SELECT count(id) 
+FROM first
 `
 
 func (q *Queries) GetLengthOfFirst(ctx context.Context) (int64, error) {

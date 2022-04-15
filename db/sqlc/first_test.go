@@ -96,3 +96,14 @@ func TestListFirst(t *testing.T) {
 		require.NotEmpty(t, account)
 	}
 }
+
+func TestGetLengthOfFirst(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		CreateRandomRow(t)
+	}
+
+	length, err := testQueries.GetLengthOfFirst(context.Background())
+	require.NoError(t, err)
+	require.NotZero(t, length)
+
+}
