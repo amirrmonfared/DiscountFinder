@@ -37,3 +37,4 @@ RETURNING *;
 -- name: DeleteSecond :exec
 DELETE FROM second
 WHERE id = $1;
+

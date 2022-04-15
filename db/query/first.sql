@@ -37,3 +37,7 @@ RETURNING *;
 -- name: DeleteFirstProduct :exec
 DELETE FROM first
 WHERE id = $1;
+
+-- name: GetLengthOfFirst :one
+SELECT count(*) 
+FROM second;

@@ -1,13 +1,17 @@
-package db
+package scrap
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/gocolly/colly"
+	_ "github.com/lib/pq"
 )
+
+var testDB *sql.DB
 
 var Ts = newTestServer()
 

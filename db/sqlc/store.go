@@ -9,6 +9,7 @@ import (
 type Store interface {
 	Querier
 	CreateProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error)
+	LengthOfFirst(ctx context.Context) (int64, error)
 }
 
 // SQLStore provides all functions to excute db queries
@@ -73,4 +74,13 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateProductParam
 	fmt.Println("Product saved")
 
 	return result, err
+}
+
+func (store *SQLStore) LengthOfFirst(ctx context.Context) (int64, error) {
+	length ,err := store.GetLengthOfFirst(ctx)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return length, nil
 }

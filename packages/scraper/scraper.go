@@ -1,4 +1,4 @@
-package db
+package scrap
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gocolly/colly"
 )
 
@@ -18,7 +19,7 @@ type Product struct {
 var Products = make([]Product, 0, 200)
 
 func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
-	store := NewStore(conn)
+	store := db.NewStore(conn)
 
 	// Instantiate default collector
 	collector := colly.NewCollector(
@@ -37,7 +38,7 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 		Products = append(Products, products)
 
 		for _, i := range Products {
-			store.CreateProduct(context.Background(), CreateProductParams{
+			store.CreateProduct(context.Background(), db.CreateProductParams{
 				Brand: i.Brand,
 				Link:  i.Link,
 				Price: i.Price,

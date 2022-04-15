@@ -7,6 +7,7 @@ import (
 
 	"github.com/amirrmonfared/DiscountFinder/api"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	scrap "github.com/amirrmonfared/DiscountFinder/packages/scraper"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
@@ -44,7 +45,7 @@ func main() {
 }
 
 func run(webPage string, conn *sql.DB) (*colly.Collector, error) {
-	scrap, err := db.Scraper(webPage, conn)
+	scrap, err := scrap.Scraper(webPage, conn)
 	if err != nil {
 		fmt.Println(err)
 	}

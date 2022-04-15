@@ -212,6 +212,21 @@ func (mr *MockStoreMockRecorder) GetFirstProductForUpdate(arg0, arg1 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFirstProductForUpdate", reflect.TypeOf((*MockStore)(nil).GetFirstProductForUpdate), arg0, arg1)
 }
 
+// GetLengthOfFirst mocks base method.
+func (m *MockStore) GetLengthOfFirst(arg0 context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLengthOfFirst", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLengthOfFirst indicates an expected call of GetLengthOfFirst.
+func (mr *MockStoreMockRecorder) GetLengthOfFirst(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLengthOfFirst", reflect.TypeOf((*MockStore)(nil).GetLengthOfFirst), arg0)
+}
+
 // GetOnSale mocks base method.
 func (m *MockStore) GetOnSale(arg0 context.Context, arg1 int64) (db.OnSale, error) {
 	m.ctrl.T.Helper()
@@ -270,6 +285,21 @@ func (m *MockStore) GetSecondForUpdate(arg0 context.Context, arg1 int64) (db.Sec
 func (mr *MockStoreMockRecorder) GetSecondForUpdate(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSecondForUpdate", reflect.TypeOf((*MockStore)(nil).GetSecondForUpdate), arg0, arg1)
+}
+
+// LengthOfFirst mocks base method.
+func (m *MockStore) LengthOfFirst(arg0 context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LengthOfFirst", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LengthOfFirst indicates an expected call of LengthOfFirst.
+func (mr *MockStoreMockRecorder) LengthOfFirst(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LengthOfFirst", reflect.TypeOf((*MockStore)(nil).LengthOfFirst), arg0)
 }
 
 // ListFirstProduct mocks base method.
