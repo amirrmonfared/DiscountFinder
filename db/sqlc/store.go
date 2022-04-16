@@ -10,6 +10,7 @@ type Store interface {
 	Querier
 	CreateProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error)
 	LengthOfFirst(ctx context.Context) (int64, error)
+	ReviewProduct(ctx context.Context, arg CreateSecondParams) (CreateSecondProductResult, error)
 }
 
 // SQLStore provides all functions to excute db queries
@@ -53,6 +54,10 @@ type CreateProductResult struct {
 	First First `json:"first"`
 }
 
+type CreateSecondProductResult struct {
+	Second Second `json:"second"`
+}
+
 func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error) {
 	var result CreateProductResult
 
@@ -72,6 +77,29 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateProductParam
 	})
 	
 	fmt.Println("Product saved")
+
+	return result, err
+}
+
+func (store *SQLStore) ReviewProduct(ctx context.Context, arg CreateSecondParams) (CreateSecondProductResult, error) {
+	var result CreateSecondProductResult
+
+	err := store.execTx(ctx, func(q *Queries) error {
+
+		var err error
+
+		result.Second, err = q.CreateSecond(ctx, CreateSecondParams{
+			Brand: arg.Brand,
+			Link: arg.Link,
+			Price: arg.Price,
+		})	
+		if err != nil {
+			return err
+		}
+		return err
+	})
+	
+	fmt.Println("Product reviewd and saved")
 
 	return result, err
 }

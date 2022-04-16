@@ -6,11 +6,13 @@ import (
 	"fmt"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
 )
 
 type LinkProduct struct {
-	Link  string `json:"link"`
+	Brand string `json:"brand"`
+	Link string `json:"link"`
 }
 
 type Product2 struct {
@@ -20,8 +22,9 @@ type Product2 struct {
 }
 
 var LinkProducts = make([]LinkProduct, 0, 200)
+var Products2 = make([]Product2, 0, 200)
 
-func Scraper2(conn *sql.DB) {
+func Scraper2(conn *sql.DB) (*colly.Collector, error) {
 	store := db.NewStore(conn)
 
 	length, err := store.GetLengthOfFirst(context.Background())
@@ -41,17 +44,41 @@ func Scraper2(conn *sql.DB) {
 
 	for _, a := range listFirst {
 		linkProducts := LinkProduct{
+			Brand: a.Brand,
 			Link: a.Link,
 		}
 
 		LinkProducts = append(LinkProducts, linkProducts)
-
-		fmt.Println(LinkProducts)
-		// firstProduct, err := store.GetFirstProduct(context.Background(), a.ID)
-		// if err != nil {
-		// 	fmt.Println(err)
-		// }
-
 	}
 
+	Collector := colly.NewCollector(			
+		colly.AllowedDomains("trendyol.com", "www.trendyol.com"),
+		colly.MaxDepth(0),
+	)
+
+	for _, b := range LinkProducts {
+		collector := Collector
+
+		collector.OnHTML(".container-right-content", func(e *colly.HTMLElement) {
+			products2 := Product2{
+				Brand: b.Brand,
+				Link: b.Link,
+				Price:  e.ChildText(".prc-dsc"),
+			}
+			Products2 = append(Products2, products2)
+
+			for _, i := range Products2 {
+				store.ReviewProduct(context.Background(), db.CreateSecondParams{
+					Brand: i.Brand,
+					Link: i.Link,
+					Price: i.Price,
+				})
+
+			}
+		})
+
+		collector.Visit(b.Link)
+	}
+
+	return Collector, nil
 }

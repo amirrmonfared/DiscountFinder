@@ -287,6 +287,21 @@ func (mr *MockStoreMockRecorder) GetSecondForUpdate(arg0, arg1 interface{}) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSecondForUpdate", reflect.TypeOf((*MockStore)(nil).GetSecondForUpdate), arg0, arg1)
 }
 
+// LengthOfFirst mocks base method.
+func (m *MockStore) LengthOfFirst(arg0 context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LengthOfFirst", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// LengthOfFirst indicates an expected call of LengthOfFirst.
+func (mr *MockStoreMockRecorder) LengthOfFirst(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LengthOfFirst", reflect.TypeOf((*MockStore)(nil).LengthOfFirst), arg0)
+}
+
 // ListFirstProduct mocks base method.
 func (m *MockStore) ListFirstProduct(arg0 context.Context, arg1 db.ListFirstProductParams) ([]db.First, error) {
 	m.ctrl.T.Helper()
@@ -330,6 +345,21 @@ func (m *MockStore) ListSecond(arg0 context.Context, arg1 db.ListSecondParams) (
 func (mr *MockStoreMockRecorder) ListSecond(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSecond", reflect.TypeOf((*MockStore)(nil).ListSecond), arg0, arg1)
+}
+
+// ReviewProduct mocks base method.
+func (m *MockStore) ReviewProduct(arg0 context.Context, arg1 db.CreateSecondParams) (db.CreateSecondProductResult, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReviewProduct", arg0, arg1)
+	ret0, _ := ret[0].(db.CreateSecondProductResult)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReviewProduct indicates an expected call of ReviewProduct.
+func (mr *MockStoreMockRecorder) ReviewProduct(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReviewProduct", reflect.TypeOf((*MockStore)(nil).ReviewProduct), arg0, arg1)
 }
 
 // UpdateFirstProduct mocks base method.
