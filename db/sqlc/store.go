@@ -99,7 +99,6 @@ func (store *SQLStore) ReviewProduct(ctx context.Context, arg CreateSecondParams
 		return err
 	})
 	
-	fmt.Println("Product reviewd and saved")
 
 	return result, err
 }
