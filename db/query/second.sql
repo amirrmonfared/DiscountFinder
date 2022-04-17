@@ -38,3 +38,6 @@ RETURNING *;
 DELETE FROM second
 WHERE id = $1;
 
+-- name: GetLengthOfSecond :one
+SELECT count(id) 
+FROM second;

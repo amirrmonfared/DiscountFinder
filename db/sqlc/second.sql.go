@@ -71,6 +71,18 @@ func (q *Queries) DeleteSecond(ctx context.Context, id int64) error {
 	return err
 }
 
+const getLengthOfSecond = `-- name: GetLengthOfSecond :one
+SELECT count(id) 
+FROM second
+`
+
+func (q *Queries) GetLengthOfSecond(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getLengthOfSecond)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getSecond = `-- name: GetSecond :one
 SELECT id, brand, link, price, created_at FROM second
 WHERE id = $1 LIMIT 1
