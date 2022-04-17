@@ -7,12 +7,13 @@ import (
 
 	"github.com/amirrmonfared/DiscountFinder/api"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
 )
 
-const webPage = "https://www.trendyol.com/erkek-t-shirt-x-g2-c73?pi=2"
+const webPage = "https://www.trendyol.com/elbise-x-c56"
 
 func main() {
 	config, err := util.LoadConfig(".")
@@ -29,6 +30,7 @@ func main() {
 	fmt.Println("connected to database")
 	fmt.Println("--------------------------------------")
 
+	//scrap.Scraper2(conn)
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
@@ -44,7 +46,7 @@ func main() {
 }
 
 func run(webPage string, conn *sql.DB) (*colly.Collector, error) {
-	scrap, err := db.Scraper(webPage, conn)
+	scrap, err := scrap.Scraper(webPage, conn)
 	if err != nil {
 		fmt.Println(err)
 	}

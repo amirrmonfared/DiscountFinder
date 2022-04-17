@@ -1,4 +1,4 @@
-package db
+package scrap
 
 import (
 	"fmt"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/gocolly/colly"
+	_ "github.com/lib/pq"
 )
 
 var Ts = newTestServer()

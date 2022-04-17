@@ -108,6 +108,18 @@ func (q *Queries) GetFirstProductForUpdate(ctx context.Context, id int64) (First
 	return i, err
 }
 
+const getLengthOfFirst = `-- name: GetLengthOfFirst :one
+SELECT count(id) 
+FROM first
+`
+
+func (q *Queries) GetLengthOfFirst(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getLengthOfFirst)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const listFirstProduct = `-- name: ListFirstProduct :many
 SELECT id, brand, link, price, created_at FROM first
 ORDER BY id

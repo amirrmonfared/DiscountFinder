@@ -1,4 +1,4 @@
-package db
+package scrap
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gocolly/colly"
 )
 
@@ -17,8 +18,9 @@ type Product struct {
 
 var Products = make([]Product, 0, 200)
 
+//Scraper starts scraping on webpage and stores products on first product table.
 func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
-	store := NewStore(conn)
+	store := db.NewStore(conn)
 
 	// Instantiate default collector
 	collector := colly.NewCollector(
@@ -26,7 +28,7 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 		colly.MaxDepth(2),
 	)
 
-	// On every a element which has href attribute call callback
+	// On every a element which has attribute call callback and store elemnts in database
 	collector.OnHTML(".p-card-wrppr", func(e *colly.HTMLElement) {
 		log.Println("product found", e.Request.URL)
 		products := Product{
@@ -37,7 +39,7 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 		Products = append(Products, products)
 
 		for _, i := range Products {
-			store.CreateProduct(context.Background(), CreateProductParams{
+			store.CreateProduct(context.Background(), db.CreateProductParams{
 				Brand: i.Brand,
 				Link:  i.Link,
 				Price: i.Price,
@@ -47,7 +49,6 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 
 	// Visit next page
 	collector.OnHTML("a[href]", func(e *colly.HTMLElement) {
-		//fmt.Println("Next page link found:", e.Attr("href"))
 		e.Request.Visit(e.Attr("href"))
 	})
 
