@@ -7,7 +7,7 @@ import (
 
 	"github.com/amirrmonfared/DiscountFinder/api"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
-	scrap "github.com/amirrmonfared/DiscountFinder/packages/scraper"
+	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
 	_ "github.com/lib/pq"
