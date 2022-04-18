@@ -31,6 +31,7 @@ func main() {
 	fmt.Println("--------------------------------------")
 
 	//scrap.Scraper2(conn)
+	//scrap.DiscountFinder(conn)
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 

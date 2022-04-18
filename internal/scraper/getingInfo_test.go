@@ -28,6 +28,7 @@ func TestGetInfoFromFirst(t *testing.T) {
 
 	for _, a := range testListFirst {
 		productFromFirst := ProductFromFirst{
+			ID: a.ID,
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,
@@ -58,6 +59,7 @@ func TestGetInfoFromSecond(t *testing.T) {
 
 	for _, a := range testListSecond {
 		productFromSecond := ProductFromSecond{
+			ID: a.ID,
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,

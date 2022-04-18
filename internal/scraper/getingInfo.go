@@ -12,12 +12,14 @@ var ProductsFromFirst = make([]ProductFromFirst, 0, 200)
 var ProductsFromSecond = make([]ProductFromSecond, 0, 200)
 
 type ProductFromFirst struct {
+	ID    int64  `json:"id"`
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price string `json:"price"`
 }
 
 type ProductFromSecond struct {
+	ID    int64  `json:"id"`
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price string `json:"price"`
@@ -44,6 +46,7 @@ func getInfoFromFirst(conn *sql.DB) ([]ProductFromFirst, error) {
 
 	for _, a := range listFirst {
 		productsFromFirst := ProductFromFirst{
+			ID:    a.ID,
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,
@@ -76,6 +79,7 @@ func getInfoFromSecond(conn *sql.DB) ([]ProductFromSecond, error) {
 
 	for _, a := range listSecond {
 		productsFromSecond := ProductFromSecond{
+			ID: a.ID,
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,
