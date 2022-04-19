@@ -2,6 +2,7 @@ package api
 
 import (
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gin-gonic/gin"
 )
 
@@ -9,18 +10,22 @@ import (
 type Server struct {
 	store  db.Store
 	router *gin.Engine
+	config util.Config
 }
 
-func NewServer(store db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(config util.Config, store db.Store) (*Server, error) {
+	server := &Server{
+		config:     config,
+		store:      store,
+	}
 	router := gin.Default()
 
 	router.POST("/product", server.createFirstProduct)
 	router.GET("/product/:id", server.getFirstProduct)
-	router.GET("/products", server.listFirstProduct)
+	router.GET("/products", server.listFirstsProduct)
 
 	server.router = router
-	return server
+	return server, nil
 }
 
 // Start runs the HTTP server on a specific address.
