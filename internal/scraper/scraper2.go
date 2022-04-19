@@ -9,13 +9,7 @@ import (
 	"github.com/gocolly/colly"
 )
 
-var LinkProducts = make([]LinkProduct, 0, 200)
-var Products2 = make([]Product2, 0, 200)
-
-type LinkProduct struct {
-	Brand string `json:"brand"`
-	Link string `json:"link"`
-}
+var SecondProducts = make([]Product2, 0, 200)
 
 type Product2 struct {
 	Brand string `json:"brand"`
@@ -28,35 +22,35 @@ type Product2 struct {
 func Scraper2(conn *sql.DB) (*colly.Collector, error) {
 	store := db.NewStore(conn)
 
-	//getInfo(conn)
+	info, _ := getInfoFromFirst(conn)
 
 	// Instantiate default collector
-	Collector := colly.NewCollector(			
+	Collector := colly.NewCollector(
 		colly.AllowedDomains("trendyol.com", "www.trendyol.com"),
 		colly.MaxDepth(0),
 	)
 
-
-	for _, b := range LinkProducts {
+	for _, b := range info {
 		collector := Collector
 
 		//On every an element that has an attribute call callback and stores elements in the database
 		collector.OnHTML(".container-right-content", func(e *colly.HTMLElement) {
 			products2 := Product2{
 				Brand: b.Brand,
-				Link: b.Link,
-				Price:  e.ChildText(".prc-dsc"),
+				Link:  b.Link,
+				Price: e.ChildText(".prc-dsc"),
 			}
 
-			Products2 = append(Products2, products2)
+			SecondProducts = append(SecondProducts, products2)
 
-			for _, i := range Products2 {
+			for _, i := range SecondProducts {
 				store.ReviewProduct(context.Background(), db.CreateSecondParams{
 					Brand: i.Brand,
-					Link: i.Link,
+					Link:  i.Link,
 					Price: i.Price,
 				})
 
+				fmt.Println("Product reviewed and saved")
 			}
 		})
 
@@ -64,35 +58,4 @@ func Scraper2(conn *sql.DB) (*colly.Collector, error) {
 	}
 
 	return Collector, nil
-}
-
-// getInfo tries to get nesseccasry information for itterating over table first
-func getInfo(conn *sql.DB) ([]LinkProduct, error) {
-	store := db.NewStore(conn)
-
-	length, err := store.GetLengthOfFirst(context.Background())
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	arg := db.ListFirstProductParams{
-		Limit:  int32(length),
-		Offset: 0,
-	}
-
-	listFirst, err := store.ListFirstProduct(context.Background(), arg)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for _, a := range listFirst {
-		linkProducts := LinkProduct{
-			Brand: a.Brand,
-			Link: a.Link,
-		}
-
-		LinkProducts = append(LinkProducts, linkProducts)
-	}
-
-	return LinkProducts, nil
 }

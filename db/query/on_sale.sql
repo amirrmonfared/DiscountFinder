@@ -38,3 +38,7 @@ RETURNING *;
 -- name: DeleteOnSale :exec
 DELETE FROM on_sale
 WHERE id = $1;
+
+-- name: GetLengthOnSale :one
+SELECT count(id) 
+FROM on_sale;

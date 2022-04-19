@@ -99,7 +99,6 @@ func (store *SQLStore) ReviewProduct(ctx context.Context, arg CreateSecondParams
 		return err
 	})
 	
-	fmt.Println("Product reviewd and saved")
 
 	return result, err
 }
@@ -111,6 +110,40 @@ func (store *SQLStore) LengthOfFirst(ctx context.Context) (int64, error) {
 		var err error
 
 		result, err = q.GetLengthOfFirst(ctx)
+		if err != nil{
+			return err
+		}
+		return err
+	})
+	fmt.Println(result)
+
+	return result, err
+}
+
+func (store *SQLStore) LengthOfSecond(ctx context.Context) (int64, error) {
+	var result int64
+
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+
+		result, err = q.GetLengthOfSecond(ctx)
+		if err != nil{
+			return err
+		}
+		return err
+	})
+	fmt.Println(result)
+
+	return result, err
+}
+
+func (store *SQLStore) LengthOfOnSale(ctx context.Context) (int64, error) {
+	var result int64
+
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+
+		result, err = q.GetLengthOnSale(ctx)
 		if err != nil{
 			return err
 		}

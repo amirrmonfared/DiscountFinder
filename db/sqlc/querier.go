@@ -19,6 +19,8 @@ type Querier interface {
 	GetFirstProduct(ctx context.Context, id int64) (First, error)
 	GetFirstProductForUpdate(ctx context.Context, id int64) (First, error)
 	GetLengthOfFirst(ctx context.Context) (int64, error)
+	GetLengthOfSecond(ctx context.Context) (int64, error)
+	GetLengthOnSale(ctx context.Context) (int64, error)
 	GetOnSale(ctx context.Context, id int64) (OnSale, error)
 	GetOnSaleForUpdate(ctx context.Context, id int64) (OnSale, error)
 	GetSecond(ctx context.Context, id int64) (Second, error)
