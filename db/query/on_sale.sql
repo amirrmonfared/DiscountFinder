@@ -29,12 +29,6 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: AddOnSalePrice :one
-UPDATE on_sale
-SET price = price + sqlc.arg(price)
-WHERE id = sqlc.arg(id)
-RETURNING *;
-
 -- name: DeleteOnSale :exec
 DELETE FROM on_sale
 WHERE id = $1;

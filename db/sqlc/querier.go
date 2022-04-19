@@ -7,9 +7,6 @@ import (
 )
 
 type Querier interface {
-	AddOnSalePrice(ctx context.Context, arg AddOnSalePriceParams) (OnSale, error)
-	AddSecondPrice(ctx context.Context, arg AddSecondPriceParams) (Second, error)
-	AddfirstProductPrice(ctx context.Context, arg AddfirstProductPriceParams) (First, error)
 	CreateFirstProduct(ctx context.Context, arg CreateFirstProductParams) (First, error)
 	CreateOnSale(ctx context.Context, arg CreateOnSaleParams) (OnSale, error)
 	CreateSecond(ctx context.Context, arg CreateSecondParams) (Second, error)

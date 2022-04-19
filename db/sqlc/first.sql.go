@@ -7,31 +7,6 @@ import (
 	"context"
 )
 
-const addfirstProductPrice = `-- name: AddfirstProductPrice :one
-UPDATE first
-SET price = price + $1
-WHERE id = $2
-RETURNING id, brand, link, price, created_at
-`
-
-type AddfirstProductPriceParams struct {
-	Price string `json:"price"`
-	ID    int64  `json:"id"`
-}
-
-func (q *Queries) AddfirstProductPrice(ctx context.Context, arg AddfirstProductPriceParams) (First, error) {
-	row := q.db.QueryRowContext(ctx, addfirstProductPrice, arg.Price, arg.ID)
-	var i First
-	err := row.Scan(
-		&i.ID,
-		&i.Brand,
-		&i.Link,
-		&i.Price,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const createFirstProduct = `-- name: CreateFirstProduct :one
 INSERT INTO first (
   brand,
