@@ -18,7 +18,7 @@ func TestCreateProduct(t *testing.T) {
 
 	for i := 0; i < n; i++ {
 		go func() {
-			result, err := store.CreateProduct(context.Background(), CreateProductParams{
+			result, err := store.CreateProduct(context.Background(), CreateFirstProductParams{
 				Brand: util.RandomString(4),
 				Link:  util.RandomLink(),
 				Price: util.RandomPriceString(3),

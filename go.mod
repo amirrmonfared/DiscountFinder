@@ -3,7 +3,6 @@ module github.com/amirrmonfared/DiscountFinder
 go 1.17
 
 require (
-	github.com/amirrmonfared/DiscountFinder v0.0.0-20220414114503-333ae6be4e71
 	github.com/gin-gonic/gin v1.7.7
 	github.com/gocolly/colly v1.2.0
 	github.com/golang/mock v1.6.0

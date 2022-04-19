@@ -66,7 +66,7 @@ func (mr *MockStoreMockRecorder) CreateOnSale(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // CreateProduct mocks base method.
-func (m *MockStore) CreateProduct(arg0 context.Context, arg1 db.CreateProductParams) (db.CreateProductResult, error) {
+func (m *MockStore) CreateProduct(arg0 context.Context, arg1 db.CreateFirstProductParams) (db.CreateProductResult, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateProduct", arg0, arg1)
 	ret0, _ := ret[0].(db.CreateProductResult)
