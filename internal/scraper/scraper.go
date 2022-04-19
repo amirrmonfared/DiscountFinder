@@ -39,7 +39,7 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 		Products = append(Products, products)
 
 		for _, i := range Products {
-			store.CreateProduct(context.Background(), db.CreateProductParams{
+			store.CreateProduct(context.Background(), db.CreateFirstProductParams{
 				Brand: i.Brand,
 				Link:  i.Link,
 				Price: i.Price,

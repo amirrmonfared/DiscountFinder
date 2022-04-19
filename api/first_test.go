@@ -47,7 +47,7 @@ func TestGetFirstProductAPI(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchUser(t, recorder.Body, product)
+				requireBodyMatchFirst(t, recorder.Body, product)
 			},
 		},
 		{
@@ -100,7 +100,7 @@ func TestGetFirstProductAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			url := fmt.Sprintf("/product/%d", tc.productID)
@@ -121,7 +121,7 @@ func randomFirstProduct() db.First {
 	}
 }
 
-func requireBodyMatchUser(t *testing.T, body *bytes.Buffer, user db.First) {
+func requireBodyMatchFirst(t *testing.T, body *bytes.Buffer, user db.First) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)
 
@@ -161,7 +161,7 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchUser(t, recorder.Body, product)
+				requireBodyMatchFirst(t, recorder.Body, product)
 			},
 		},
 		{
@@ -226,7 +226,7 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			store := mockdb.NewMockStore(ctrl)
 			tc.buildStubs(store)
 
-			server := NewServer(store)
+			server := newTestServer(t, store)
 			recorder := httptest.NewRecorder()
 
 			// Marshal body data to JSON
@@ -236,6 +236,104 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			url := "/product"
 			request, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(data))
 			require.NoError(t, err)
+
+			server.router.ServeHTTP(recorder, request)
+			tc.checkResponse(recorder)
+		})
+	}
+}
+
+func requireBodyMatchFirsts(t *testing.T, body *bytes.Buffer, firsts []db.First) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotFirsts []db.First
+	err = json.Unmarshal(data, &gotFirsts)
+	require.NoError(t, err)
+	require.Equal(t, firsts, gotFirsts)
+}
+
+func TestListFirstsAPI(t *testing.T) {
+	//	product:= randomFirstProduct()
+
+	n := 5
+	products := make([]db.First, n)
+	for i := 0; i < n; i++ {
+		products[i] = randomFirstProduct()
+	}
+
+	type Query struct {
+		pageID   int
+		pageSize int
+	}
+
+	testCases := []struct {
+		name          string
+		query         Query
+		buildStubs    func(store *mockdb.MockStore)
+		checkResponse func(recoder *httptest.ResponseRecorder)
+	}{
+		{
+			name: "OK",
+			query: Query{
+				pageID:   1,
+				pageSize: n,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				arg := db.ListFirstProductParams{
+					Limit:  int32(n),
+					Offset: 0,
+				}
+
+				store.EXPECT().
+					ListFirstProduct(gomock.Any(), gomock.Eq(arg)).
+					Times(1).
+					Return(products, nil)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusOK, recorder.Code)
+				requireBodyMatchFirsts(t, recorder.Body, products)
+			},
+		},
+		{
+			name: "InvalidPageSize",
+			query: Query{
+				pageID:   1,
+				pageSize: 100000,
+			},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					ListFirstProduct(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(recorder *httptest.ResponseRecorder) {
+				require.Equal(t, http.StatusBadRequest, recorder.Code)
+			},
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStubs(store)
+
+			server := newTestServer(t, store)
+			recorder := httptest.NewRecorder()
+
+			url := "/products"
+			request, err := http.NewRequest(http.MethodGet, url, nil)
+			require.NoError(t, err)
+
+			// Add query parameters to request URL
+			q := request.URL.Query()
+			q.Add("page_id", fmt.Sprintf("%d", tc.query.pageID))
+			q.Add("page_size", fmt.Sprintf("%d", tc.query.pageSize))
+			request.URL.RawQuery = q.Encode()
 
 			server.router.ServeHTTP(recorder, request)
 			tc.checkResponse(recorder)

@@ -95,3 +95,27 @@ func TestListAccountsSecond(t *testing.T) {
 		require.NotEmpty(t, account)
 	}
 }
+
+func TestGetLengthOfSecond(t *testing.T) {
+	for i := 0; i < 10; i++ {
+		CreateRandomRowSecond(t)
+	}
+
+	length, err := testQueries.GetLengthOfSecond(context.Background())
+	require.NoError(t, err)
+	require.NotZero(t, length)
+
+}
+
+func TestGetSecondForUpdate(t *testing.T) {
+	product := CreateRandomRowSecond(t)
+	product2, err := testQueries.GetSecondForUpdate(context.Background(), product.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, product2)
+
+	require.Equal(t, product.ID, product2.ID)
+	require.Equal(t, product.Brand, product2.Brand)
+	require.Equal(t, product.Link, product2.Link)
+	require.Equal(t, product.Price, product2.Price)
+	require.WithinDuration(t, product.CreatedAt, product2.CreatedAt, time.Second)
+}

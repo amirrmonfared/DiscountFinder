@@ -107,3 +107,16 @@ func TestGetLengthOfFirst(t *testing.T) {
 	require.NotZero(t, length)
 
 }
+
+func TestGetFirstProductForUpdate(t *testing.T) {
+	product := CreateRandomRow(t)
+	product2, err := testQueries.GetFirstProductForUpdate(context.Background(), product.ID)
+	require.NoError(t, err)
+	require.NotEmpty(t, product2)
+
+	require.Equal(t, product.ID, product2.ID)
+	require.Equal(t, product.Brand, product2.Brand)
+	require.Equal(t, product.Link, product2.Link)
+	require.Equal(t, product.Price, product2.Price)
+	require.WithinDuration(t, product.CreatedAt, product2.CreatedAt, time.Second)
+}

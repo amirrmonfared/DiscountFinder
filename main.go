@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/amirrmonfared/DiscountFinder/api"
-	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
@@ -32,15 +30,15 @@ func main() {
 
 	//scrap.Scraper2(conn)
 	//scrap.DiscountFinder(conn)
-	store := db.NewStore(conn)
-	server := api.NewServer(store)
+	// store := db.NewStore(conn)
+	// server := api.NewServer(store)
 
 	go run(webPage, conn)
 
-	err = server.Start(config.ServerAddress)
-	if err != nil {
-		log.Fatal("cannot start server:", err)
-	}
+	// err = server.Start(config.ServerAddress)
+	// if err != nil {
+	// 	log.Fatal("cannot start server:", err)
+	// }
 
 	defer conn.Close()
 

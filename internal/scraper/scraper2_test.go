@@ -1,52 +1,43 @@
 package scrap
 
-// import (
-// 	"fmt"
-// 	"testing"
+import (
+	"fmt"
+	"testing"
 
-// 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
-// 	"github.com/amirrmonfared/DiscountFinder/util"
-// 	"github.com/gocolly/colly"
-// 	_ "github.com/lib/pq"
-// )
+	"github.com/gocolly/colly"
+)
 
+func TestCollectorOnHTML2(t *testing.T) {
+	ts := Ts
+	defer ts.Close()
 
+	c, err := Scraper2(testDB)
+	if err != nil {
+		fmt.Println(err)
+	}
 
-// func TestCreateRow(t *testing.T) {
-// 	CreateRandomRow()
-// }
+	c.OnHTML("title", func(e *colly.HTMLElement) {
+		if e.Text != "Test Page" {
+			t.Error("Title element text does not match, got", e.Text)
+		}
+	})
 
-// func TestCollectorOnHTML2(t *testing.T) {
-// 	ts := Ts
-// 	defer ts.Close()
+	c.OnHTML("p", func(e *colly.HTMLElement) {
+		if e.Attr("class") != "description" {
+			t.Error("Failed to get paragraph's class attribute")
+		}
+	})
 
-// 	c, err := Scraper2(testDB)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 	}
+	c.OnHTML("body", func(e *colly.HTMLElement) {
+		if e.ChildAttr("p", "class") != "description" {
+			t.Error("Invalid class value")
+		}
+		classes := e.ChildAttrs("p", "class")
+		if len(classes) != 2 {
+			t.Error("Invalid class values")
+		}
+	})
 
-// 	c.OnHTML("title", func(e *colly.HTMLElement) {
-// 		if e.Text != "Test Page" {
-// 			t.Error("Title element text does not match, got", e.Text)
-// 		}
-// 	})
+	c.Visit(ts.URL + "/html")
 
-// 	c.OnHTML("p", func(e *colly.HTMLElement) {
-// 		if e.Attr("class") != "description" {
-// 			t.Error("Failed to get paragraph's class attribute")
-// 		}
-// 	})
-
-// 	c.OnHTML("body", func(e *colly.HTMLElement) {
-// 		if e.ChildAttr("p", "class") != "description" {
-// 			t.Error("Invalid class value")
-// 		}
-// 		classes := e.ChildAttrs("p", "class")
-// 		if len(classes) != 2 {
-// 			t.Error("Invalid class values")
-// 		}
-// 	})
-
-// 	c.Visit(ts.URL + "/html")
-
-// }
+}

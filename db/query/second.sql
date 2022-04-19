@@ -28,12 +28,6 @@ ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: AddSecondPrice :one
-UPDATE second
-SET price = price + sqlc.arg(price)
-WHERE id = sqlc.arg(id)
-RETURNING *;
-
 -- name: DeleteSecond :exec
 DELETE FROM second
 WHERE id = $1;

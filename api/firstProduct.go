@@ -89,7 +89,7 @@ type listProductRequest struct {
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
-func (server *Server) listFirstProduct(ctx *gin.Context) {
+func (server *Server) listFirstsProduct(ctx *gin.Context) {
 	var req listProductRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
@@ -109,19 +109,3 @@ func (server *Server) listFirstProduct(ctx *gin.Context) {
 
 	ctx.JSON(http.StatusOK, product)
 }
-
-// func (server *Server) deleteFirstProduct(ctx *gin.Context) {
-// 	var req getProductRequest
-// 	if err := ctx.ShouldBindUri(&req); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-// 		return
-// 	}
-
-// 	err := server.store.DeleteFirstProduct(ctx, req.ID)
-// 	if err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusOK, err)
-// }

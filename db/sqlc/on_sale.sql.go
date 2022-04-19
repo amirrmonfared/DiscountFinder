@@ -7,32 +7,6 @@ import (
 	"context"
 )
 
-const addOnSalePrice = `-- name: AddOnSalePrice :one
-UPDATE on_sale
-SET price = price + $1
-WHERE id = $2
-RETURNING id, brand, link, price, saleper, created_at
-`
-
-type AddOnSalePriceParams struct {
-	Price string `json:"price"`
-	ID    int64  `json:"id"`
-}
-
-func (q *Queries) AddOnSalePrice(ctx context.Context, arg AddOnSalePriceParams) (OnSale, error) {
-	row := q.db.QueryRowContext(ctx, addOnSalePrice, arg.Price, arg.ID)
-	var i OnSale
-	err := row.Scan(
-		&i.ID,
-		&i.Brand,
-		&i.Link,
-		&i.Price,
-		&i.Saleper,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const createOnSale = `-- name: CreateOnSale :one
 INSERT INTO on_sale (
   brand,
