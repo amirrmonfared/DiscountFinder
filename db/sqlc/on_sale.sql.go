@@ -80,6 +80,18 @@ func (q *Queries) DeleteOnSale(ctx context.Context, id int64) error {
 	return err
 }
 
+const getLengthOnSale = `-- name: GetLengthOnSale :one
+SELECT count(id) 
+FROM on_sale
+`
+
+func (q *Queries) GetLengthOnSale(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getLengthOnSale)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const getOnSale = `-- name: GetOnSale :one
 SELECT id, brand, link, price, saleper, created_at FROM on_sale
 WHERE id = $1 LIMIT 1

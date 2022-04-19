@@ -242,6 +242,21 @@ func (mr *MockStoreMockRecorder) GetLengthOfSecond(arg0 interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLengthOfSecond", reflect.TypeOf((*MockStore)(nil).GetLengthOfSecond), arg0)
 }
 
+// GetLengthOnSale mocks base method.
+func (m *MockStore) GetLengthOnSale(arg0 context.Context) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLengthOnSale", arg0)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLengthOnSale indicates an expected call of GetLengthOnSale.
+func (mr *MockStoreMockRecorder) GetLengthOnSale(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLengthOnSale", reflect.TypeOf((*MockStore)(nil).GetLengthOnSale), arg0)
+}
+
 // GetOnSale mocks base method.
 func (m *MockStore) GetOnSale(arg0 context.Context, arg1 int64) (db.OnSale, error) {
 	m.ctrl.T.Helper()

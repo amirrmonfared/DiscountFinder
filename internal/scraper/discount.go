@@ -9,7 +9,7 @@ import (
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 )
 
-func DiscountFinder(conn *sql.DB) {
+func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 	store := db.NewStore(conn)
 
 	fromFirst, err := getInfoFromFirst(conn)
@@ -39,7 +39,7 @@ func DiscountFinder(conn *sql.DB) {
 			priceSecondInInt, _ := strconv.Atoi(fromSecond[i].Price)
 
 			salePer := (float64(priceSecondInInt) - float64(priceFirstInInt)) / float64(priceFirstInInt) * 100.00
-			store.CreateOnSale(context.Background(), db.CreateOnSaleParams{
+			discount, _ := store.CreateOnSale(context.Background(), db.CreateOnSaleParams{
 				Brand:   fromFirst[i].Brand,
 				Link:    fromFirst[i].Link,
 				Price:   fromSecond[i].Price,
@@ -49,6 +49,14 @@ func DiscountFinder(conn *sql.DB) {
 				ID:    fromFirst[i].ID,
 				Price: fromSecond[i].Price,
 			})
+			productsOnSale := ProductOnSale{
+				ID:    discount.ID,
+				Brand: discount.Brand,
+				Link:  discount.Link,
+				Price: discount.Price,
+			}
+			ProductsOnSale = append(ProductsOnSale, productsOnSale)
+
 			fmt.Println("The product is at discount")
 		}
 
@@ -56,5 +64,5 @@ func DiscountFinder(conn *sql.DB) {
 
 	}
 
-
+	return ProductsOnSale, nil
 }

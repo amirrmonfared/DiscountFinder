@@ -136,3 +136,20 @@ func (store *SQLStore) LengthOfSecond(ctx context.Context) (int64, error) {
 
 	return result, err
 }
+
+func (store *SQLStore) LengthOfOnSale(ctx context.Context) (int64, error) {
+	var result int64
+
+	err := store.execTx(ctx, func(q *Queries) error {
+		var err error
+
+		result, err = q.GetLengthOnSale(ctx)
+		if err != nil{
+			return err
+		}
+		return err
+	})
+	fmt.Println(result)
+
+	return result, err
+}

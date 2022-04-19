@@ -8,9 +8,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var TestProductsFromFirst = make([]ProductFromFirst, 0, 200)
-var TestProductsFromSecond = make([]ProductFromSecond, 0, 200)
-
 func TestGetInfoFromFirst(t *testing.T) {
 
 	testLength, err := testQueries.GetLengthOfFirst(context.Background())
@@ -27,19 +24,19 @@ func TestGetInfoFromFirst(t *testing.T) {
 	require.NotZero(t, testListFirst)
 
 	for _, a := range testListFirst {
-		productFromFirst := ProductFromFirst{
+		productsFromFirst := ProductFromFirst{
 			ID: a.ID,
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,
 		}
 
-		TestProductsFromFirst = append(TestProductsFromFirst, productFromFirst)
+		ProductsFromFirst = append(ProductsFromFirst, productsFromFirst)
 	}
 
 	info, err := getInfoFromFirst(testDB)
 	require.NoError(t, err)
-	require.Equal(t, info, TestProductsFromFirst)
+	require.Equal(t, info, ProductsFromFirst)
 }
 
 func TestGetInfoFromSecond(t *testing.T) {
@@ -58,17 +55,17 @@ func TestGetInfoFromSecond(t *testing.T) {
 	require.NotZero(t, testListSecond)
 
 	for _, a := range testListSecond {
-		productFromSecond := ProductFromSecond{
+		productsFromSecond := ProductFromSecond{
 			ID: a.ID,
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,
 		}
 
-		TestProductsFromSecond = append(TestProductsFromSecond, productFromSecond)
+		ProductsFromSecond = append(ProductsFromSecond, productsFromSecond)
 	}
 
 	info, err := getInfoFromSecond(testDB)
 	require.NoError(t, err)
-	require.Equal(t, info, TestProductsFromSecond)
+	require.Equal(t, info, ProductsFromSecond)
 }
