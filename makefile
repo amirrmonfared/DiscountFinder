@@ -1,6 +1,5 @@
 run:
-	go run main.go 
-
+	go run ./cmd/web/.
 postgres: 
 	docker run --name crawler -p 8082:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=password -d postgres:14-alpine
 
