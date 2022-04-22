@@ -49,8 +49,8 @@ func Scraper2(conn *sql.DB) (*colly.Collector, error) {
 					Link:  i.Link,
 					Price: i.Price,
 				})
-
-				fmt.Println("Product reviewed and saved")
+				removeProduct2()
+				fmt.Printf("Product %s , Price %s reviewed\n", i.Brand, i.Price)
 			}
 		})
 
@@ -58,4 +58,11 @@ func Scraper2(conn *sql.DB) (*colly.Collector, error) {
 	}
 
 	return Collector, nil
+}
+
+func removeProduct2() Product2 {
+	l := len(SecondProducts) - 1
+	toRemove := SecondProducts[l]
+	SecondProducts = SecondProducts[:l]
+	return toRemove
 }

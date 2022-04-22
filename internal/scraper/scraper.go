@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gocolly/colly"
@@ -30,7 +29,6 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 
 	// On every a element which has attribute call callback and store elemnts in database
 	collector.OnHTML(".p-card-wrppr", func(e *colly.HTMLElement) {
-		log.Println("product found", e.Request.URL)
 		products := Product{
 			Brand: e.ChildAttr(".prdct-desc-cntnr-wrppr span", "title"),
 			Link:  "https://trendyol.com" + e.ChildAttr(".p-card-chldrn-cntnr a", "href"),
@@ -44,6 +42,9 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 				Link:  i.Link,
 				Price: i.Price,
 			})
+			fmt.Printf("Brand %s Price %s was found!\n", i.Brand, i.Price)
+			//to remove last element in slice
+			removeProduct()
 		}
 	})
 
@@ -53,15 +54,22 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	})
 
 	collector.OnResponse(func(r *colly.Response) {
-		fmt.Println("Status Code:", r.StatusCode)
+	//	fmt.Println("Status Code:", r.StatusCode)
 	})
 
 	collector.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting", r.URL.String())
+	//	fmt.Println("Visiting", r.URL.String())
 	})
 
 	// Start scraping on Trendyol.com
 	collector.Visit(webPage)
 
 	return collector, nil
+}
+
+func removeProduct() Product {
+	l := len(Products) - 1
+	toRemove := Products[l]
+	Products = Products[:l]
+	return toRemove
 }
