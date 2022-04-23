@@ -10,9 +10,7 @@ type Store interface {
 	Querier
 	CreateProduct(ctx context.Context, arg CreateFirstProductParams) (CreateProductResult, error)
 	LengthOfFirst(ctx context.Context) (int64, error)
-	LengthOfSecond(ctx context.Context) (int64, error)
 	LengthOfOnSale(ctx context.Context) (int64, error)
-	ReviewProduct(ctx context.Context, arg CreateSecondParams) (CreateSecondProductResult, error)
 }
 
 // SQLStore provides all functions to excute db queries
@@ -46,18 +44,8 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 	return tx.Commit()
 }
 
-// type CreateProductParams struct {
-// 	Brand string `json:"brand"`
-// 	Link  string `json:"link"`
-// 	Price string `json:"price"`
-// }
-
 type CreateProductResult struct {
 	First First `json:"first"`
-}
-
-type CreateSecondProductResult struct {
-	Second Second `json:"second"`
 }
 
 func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateFirstProductParams) (CreateProductResult, error) {
@@ -83,29 +71,6 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateFirstProduct
 	return result, err
 }
 
-func (store *SQLStore) ReviewProduct(ctx context.Context, arg CreateSecondParams) (CreateSecondProductResult, error) {
-	var result CreateSecondProductResult
-
-	err := store.execTx(ctx, func(q *Queries) error {
-
-		var err error
-
-		result.Second, err = q.CreateSecond(ctx, CreateSecondParams{
-			Brand: arg.Brand,
-			Link:  arg.Link,
-			Price: arg.Price,
-		})
-		if err != nil {
-			return err
-		}
-		return err
-	})
-
-	fmt.Println("Product saved")
-
-	return result, err
-}
-
 func (store *SQLStore) LengthOfFirst(ctx context.Context) (int64, error) {
 	var result int64
 
@@ -113,23 +78,6 @@ func (store *SQLStore) LengthOfFirst(ctx context.Context) (int64, error) {
 		var err error
 
 		result, err = q.GetLengthOfFirst(ctx)
-		if err != nil {
-			return err
-		}
-		return err
-	})
-	fmt.Println(result)
-
-	return result, err
-}
-
-func (store *SQLStore) LengthOfSecond(ctx context.Context) (int64, error) {
-	var result int64
-
-	err := store.execTx(ctx, func(q *Queries) error {
-		var err error
-
-		result, err = q.GetLengthOfSecond(ctx)
 		if err != nil {
 			return err
 		}

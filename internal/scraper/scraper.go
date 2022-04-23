@@ -9,14 +9,6 @@ import (
 	"github.com/gocolly/colly"
 )
 
-type Product struct {
-	Brand string `json:"brand"`
-	Link  string `json:"link"`
-	Price string `json:"price"`
-}
-
-var Products = make([]Product, 0, 200)
-
 //Scraper starts scraping on webpage and stores products on first product table.
 func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	store := db.NewStore(conn)
