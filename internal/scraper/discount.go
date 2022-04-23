@@ -14,10 +14,10 @@ import (
 func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 	store := db.NewStore(conn)
 	//collecting data from the first table and reviewed slice
-	fromFirst, review, _ := collector(conn)
-	fromSecond := uniqueReview(review)
+	fromFirst, review, _, _ := collector(conn)
+	fromSecond, _ := uniqueReview(review)
 	onSale, _ := differences(fromFirst, fromSecond)
-	fromOnSale := uniqueOnSale(onSale)
+	fromOnSale, _ := uniqueOnSale(onSale)
 
 	//iterating over fromOnSale slice to storing elements
 	// in table on_sale
@@ -41,7 +41,7 @@ func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 
 //collector trying to collect product from first table 
 //and storing products into slice
-func collector(conn *sql.DB) ([]ProductFromFirst, []ProductForReview, error) {
+func collector(conn *sql.DB) ([]ProductFromFirst, []ProductForReview, *colly.Collector, error) {
 	firstProducts, err := getInfoFromFirst(conn)
 	if err != nil {
 		fmt.Println("cannot get first Products", err)
@@ -69,7 +69,7 @@ func collector(conn *sql.DB) ([]ProductFromFirst, []ProductForReview, error) {
 		collector.Visit(b.Link)
 	}
 
-	return firstProducts, ProductsForReview, nil
+	return firstProducts, ProductsForReview, Collector,nil
 }
 
 func differences(fromFirst []ProductFromFirst, fromSecond []ProductForReview) ([]ProductOnSale, error) {

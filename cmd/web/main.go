@@ -37,7 +37,7 @@ func main() {
 	//go RunScrap(webPage, conn)
 
 	// go runScrap2(conn)
-	// go runDiscountFinder(conn)
+	 go RunDiscountFinder(conn)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
