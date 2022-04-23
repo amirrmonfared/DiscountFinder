@@ -9,25 +9,18 @@ import (
 type Querier interface {
 	CreateFirstProduct(ctx context.Context, arg CreateFirstProductParams) (First, error)
 	CreateOnSale(ctx context.Context, arg CreateOnSaleParams) (OnSale, error)
-	CreateSecond(ctx context.Context, arg CreateSecondParams) (Second, error)
 	DeleteFirstProduct(ctx context.Context, id int64) error
 	DeleteOnSale(ctx context.Context, id int64) error
-	DeleteSecond(ctx context.Context, id int64) error
 	GetFirstProduct(ctx context.Context, id int64) (First, error)
 	GetFirstProductForUpdate(ctx context.Context, id int64) (First, error)
 	GetLengthOfFirst(ctx context.Context) (int64, error)
-	GetLengthOfSecond(ctx context.Context) (int64, error)
 	GetLengthOnSale(ctx context.Context) (int64, error)
 	GetOnSale(ctx context.Context, id int64) (OnSale, error)
 	GetOnSaleForUpdate(ctx context.Context, id int64) (OnSale, error)
-	GetSecond(ctx context.Context, id int64) (Second, error)
-	GetSecondForUpdate(ctx context.Context, id int64) (Second, error)
 	ListFirstProduct(ctx context.Context, arg ListFirstProductParams) ([]First, error)
 	ListOnSale(ctx context.Context, arg ListOnSaleParams) ([]OnSale, error)
-	ListSecond(ctx context.Context, arg ListSecondParams) ([]Second, error)
 	UpdateFirstProduct(ctx context.Context, arg UpdateFirstProductParams) (First, error)
 	UpdateOnSale(ctx context.Context, arg UpdateOnSaleParams) (OnSale, error)
-	UpdateSecond(ctx context.Context, arg UpdateSecondParams) (Second, error)
 }
 
 var _ Querier = (*Queries)(nil)

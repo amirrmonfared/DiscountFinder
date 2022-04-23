@@ -17,15 +17,6 @@ func RunScrap(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	return scrap, nil
 }
 
-func RunScrap2(conn *sql.DB) (*colly.Collector, error) {
-	scrap2, err := scrap.Scraper2(conn)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return scrap2, nil
-}
-
 func RunDiscountFinder(conn *sql.DB) ([]scrap.ProductOnSale, error) {
 	discount, err := scrap.DiscountFinder(conn)
 	if err != nil {
