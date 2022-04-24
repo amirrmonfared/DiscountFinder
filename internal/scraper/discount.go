@@ -4,13 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gocolly/colly"
 )
 
-//DiscountFinder store OnSale products 
+//DiscountFinder store OnSale products
 func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 	store := db.NewStore(conn)
 	//collecting data from the first table and reviewed slice
@@ -22,15 +21,16 @@ func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 	//iterating over fromOnSale slice to storing elements
 	// in table on_sale
 	for i := 0; i < len(fromOnSale); i++ {
-		priceFirstInInt, _ := strconv.Atoi(fromFirst[i].Price)
-		priceSecondInInt, _ := strconv.Atoi(fromSecond[i].Price)
+		// TODO: add discount percentage
+		// priceFirstInInt, _ := strconv.Atoi(fromFirst[i].Price)
+		// priceSecondInInt, _ := strconv.Atoi(fromSecond[i].Price)
 
-		salePer := (float64(priceSecondInInt) - float64(priceFirstInInt)) / float64(priceFirstInInt) * 100.00
+		// salePer := (float64(priceSecondInInt) - float64(priceFirstInInt)) / float64(priceFirstInInt) * 100.00
 		store.CreateOnSale(context.Background(), db.CreateOnSaleParams{
-			Brand:   fromFirst[i].Brand,
-			Link:    fromFirst[i].Link,
-			Price:   fromSecond[i].Price,
-			Saleper: int64(salePer),
+			Brand:    fromFirst[i].Brand,
+			Link:     fromFirst[i].Link,
+			Price:    fromSecond[i].Price,
+			PrvPrice: fromFirst[i].Price,
 		})
 		fmt.Println("The product is at discount")
 	}
@@ -39,7 +39,7 @@ func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 
 }
 
-//collector trying to collect product from first table 
+//collector trying to collect product from first table
 //and storing products into slice
 func collector(conn *sql.DB) ([]ProductFromFirst, []ProductForReview, *colly.Collector, error) {
 	firstProducts, err := getInfoFromFirst(conn)
@@ -69,7 +69,7 @@ func collector(conn *sql.DB) ([]ProductFromFirst, []ProductForReview, *colly.Col
 		collector.Visit(b.Link)
 	}
 
-	return firstProducts, ProductsForReview, Collector,nil
+	return firstProducts, ProductsForReview, Collector, nil
 }
 
 func differences(fromFirst []ProductFromFirst, fromSecond []ProductForReview) ([]ProductOnSale, error) {

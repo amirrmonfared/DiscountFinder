@@ -12,17 +12,17 @@ INSERT INTO on_sale (
   brand,
   link,
   price,
-  saleper
+  prv_price
 ) VALUES (
   $1, $2, $3, $4
-) RETURNING id, brand, link, price, saleper, created_at
+) RETURNING id, brand, link, price, prv_price, created_at
 `
 
 type CreateOnSaleParams struct {
-	Brand   string `json:"brand"`
-	Link    string `json:"link"`
-	Price   string `json:"price"`
-	Saleper int64  `json:"saleper"`
+	Brand    string `json:"brand"`
+	Link     string `json:"link"`
+	Price    string `json:"price"`
+	PrvPrice string `json:"prv_price"`
 }
 
 func (q *Queries) CreateOnSale(ctx context.Context, arg CreateOnSaleParams) (OnSale, error) {
@@ -30,7 +30,7 @@ func (q *Queries) CreateOnSale(ctx context.Context, arg CreateOnSaleParams) (OnS
 		arg.Brand,
 		arg.Link,
 		arg.Price,
-		arg.Saleper,
+		arg.PrvPrice,
 	)
 	var i OnSale
 	err := row.Scan(
@@ -38,7 +38,7 @@ func (q *Queries) CreateOnSale(ctx context.Context, arg CreateOnSaleParams) (OnS
 		&i.Brand,
 		&i.Link,
 		&i.Price,
-		&i.Saleper,
+		&i.PrvPrice,
 		&i.CreatedAt,
 	)
 	return i, err
@@ -67,7 +67,7 @@ func (q *Queries) GetLengthOnSale(ctx context.Context) (int64, error) {
 }
 
 const getOnSale = `-- name: GetOnSale :one
-SELECT id, brand, link, price, saleper, created_at FROM on_sale
+SELECT id, brand, link, price, prv_price, created_at FROM on_sale
 WHERE id = $1 LIMIT 1
 `
 
@@ -79,14 +79,14 @@ func (q *Queries) GetOnSale(ctx context.Context, id int64) (OnSale, error) {
 		&i.Brand,
 		&i.Link,
 		&i.Price,
-		&i.Saleper,
+		&i.PrvPrice,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const getOnSaleForUpdate = `-- name: GetOnSaleForUpdate :one
-SELECT id, brand, link, price, saleper, created_at FROM on_sale
+SELECT id, brand, link, price, prv_price, created_at FROM on_sale
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE
 `
@@ -99,14 +99,14 @@ func (q *Queries) GetOnSaleForUpdate(ctx context.Context, id int64) (OnSale, err
 		&i.Brand,
 		&i.Link,
 		&i.Price,
-		&i.Saleper,
+		&i.PrvPrice,
 		&i.CreatedAt,
 	)
 	return i, err
 }
 
 const listOnSale = `-- name: ListOnSale :many
-SELECT id, brand, link, price, saleper, created_at FROM on_sale
+SELECT id, brand, link, price, prv_price, created_at FROM on_sale
 ORDER BY id
 LIMIT $1
 OFFSET $2
@@ -131,7 +131,7 @@ func (q *Queries) ListOnSale(ctx context.Context, arg ListOnSaleParams) ([]OnSal
 			&i.Brand,
 			&i.Link,
 			&i.Price,
-			&i.Saleper,
+			&i.PrvPrice,
 			&i.CreatedAt,
 		); err != nil {
 			return nil, err
@@ -151,7 +151,7 @@ const updateOnSale = `-- name: UpdateOnSale :one
 UPDATE on_sale
 SET price = $2
 WHERE id = $1
-RETURNING id, brand, link, price, saleper, created_at
+RETURNING id, brand, link, price, prv_price, created_at
 `
 
 type UpdateOnSaleParams struct {
@@ -167,7 +167,7 @@ func (q *Queries) UpdateOnSale(ctx context.Context, arg UpdateOnSaleParams) (OnS
 		&i.Brand,
 		&i.Link,
 		&i.Price,
-		&i.Saleper,
+		&i.PrvPrice,
 		&i.CreatedAt,
 	)
 	return i, err

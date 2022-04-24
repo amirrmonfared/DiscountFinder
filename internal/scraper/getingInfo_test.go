@@ -24,10 +24,10 @@ func TestGetInfoFromOnSale(t *testing.T) {
 
 func CreateRandomRowOnSale(t *testing.T) db.OnSale {
 	arg := db.CreateOnSaleParams{
-		Brand:   util.RandomString(5),
-		Link:    util.RandomLink(),
-		Saleper: util.RandomInt(1, 100),
-		Price:   util.RandomPriceString(4),
+		Brand:    util.RandomString(5),
+		Link:     util.RandomLink(),
+		Price:    util.RandomPriceString(4),
+		PrvPrice: util.RandomPriceString(1),
 	}
 
 	product, err := testQueries.CreateOnSale(context.Background(), arg)
@@ -37,7 +37,7 @@ func CreateRandomRowOnSale(t *testing.T) db.OnSale {
 	require.Equal(t, arg.Brand, product.Brand)
 	require.Equal(t, arg.Link, product.Link)
 	require.Equal(t, arg.Price, product.Price)
-	require.Equal(t, arg.Saleper, product.Saleper)
+	require.Equal(t, arg.PrvPrice, product.PrvPrice)
 	require.NotZero(t, product.ID)
 	require.NotZero(t, product.CreatedAt)
 

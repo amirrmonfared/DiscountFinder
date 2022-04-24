@@ -3,7 +3,7 @@ INSERT INTO on_sale (
   brand,
   link,
   price,
-  saleper
+  prv_price
 ) VALUES (
   $1, $2, $3, $4
 ) RETURNING *;

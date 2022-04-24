@@ -11,7 +11,7 @@ CREATE TABLE "on_sale" (
   "brand" varchar NOT NULL,
   "link" varchar UNIQUE NOT NULL,
   "price" varchar NOT NULL,
-  "saleper" bigint NOT NULL,
+  "prv_price" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 

@@ -14,7 +14,7 @@ func CreateRandomRowOnSale(t *testing.T) OnSale {
 	arg := CreateOnSaleParams{
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
-		Saleper: util.RandomInt(1, 100),
+		PrvPrice: util.RandomPriceString(1),
 		Price: util.RandomPriceString(4),
 	}
 
@@ -25,7 +25,7 @@ func CreateRandomRowOnSale(t *testing.T) OnSale {
 	require.Equal(t, arg.Brand, product.Brand)
 	require.Equal(t, arg.Link, product.Link)
 	require.Equal(t, arg.Price, product.Price)
-	require.Equal(t, arg.Saleper, product.Saleper)
+	require.Equal(t, arg.PrvPrice, product.PrvPrice)
 	require.NotZero(t, product.ID)
 	require.NotZero(t, product.CreatedAt)
 
@@ -45,7 +45,7 @@ func TestGetOnSale(t *testing.T) {
 	require.Equal(t, row1.ID, row2.ID)
 	require.Equal(t, row1.Brand, row2.Brand)
 	require.Equal(t, row1.Link, row2.Link)
-	require.Equal(t, row1.Saleper, row2.Saleper)
+	require.Equal(t, row1.PrvPrice, row2.PrvPrice)
 	require.Equal(t, row1.Price, row2.Price)
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
@@ -65,7 +65,7 @@ func TestUpdateOnSale(t *testing.T) {
 	require.Equal(t, row1.ID, row2.ID)
 	require.Equal(t, row1.Brand, row2.Brand)
 	require.Equal(t, row1.Link, row2.Link)
-	require.Equal(t, row1.Saleper, row2.Saleper)
+	require.Equal(t, row1.PrvPrice, row2.PrvPrice)
 	require.Equal(t, arg.Price, row2.Price)
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }

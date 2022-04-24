@@ -66,6 +66,7 @@ func getInfoFromOnSale(conn *sql.DB) ([]ProductOnSale, error) {
 			Brand: a.Brand,
 			Link:  a.Link,
 			Price: a.Price,
+			PrvPrice: a.PrvPrice,
 		} 
 
 		ProductsOnSale = append(ProductsOnSale, productsOnSale)
