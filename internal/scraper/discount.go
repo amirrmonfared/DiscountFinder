@@ -32,7 +32,12 @@ func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 			Price:    fromSecond[i].Price,
 			PrvPrice: fromFirst[i].Price,
 		})
+
 		fmt.Println("The product is at discount")
+	}
+
+	for i := 0; i < len(fromFirst); i++{
+		store.DeleteFirstProduct(context.Background(),fromFirst[i].ID)
 	}
 
 	return ProductsOnSale, nil

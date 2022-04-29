@@ -7,6 +7,7 @@ import (
 
 	"github.com/amirrmonfared/DiscountFinder/api"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	_ "github.com/lib/pq"
 )
@@ -34,10 +35,9 @@ func main() {
 		fmt.Println("cannot connect to server", err)
 	}
 
-	//go RunScrap(webPage, conn)
-
-	// go runScrap2(conn)
-	 go RunDiscountFinder(conn)
+	go RunScrap(webPage, conn)
+	go telegram.Auth(conn)
+	// RunDiscountFinder(conn)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
