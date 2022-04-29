@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
+	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
 	"github.com/gocolly/colly"
 )
 
@@ -23,4 +24,8 @@ func RunDiscountFinder(conn *sql.DB) ([]scrap.ProductOnSale, error) {
 		fmt.Println(err)
 	}
 	return discount, nil
+}
+
+func RunBot(conn *sql.DB) {
+	telegram.Bot(conn)
 }
