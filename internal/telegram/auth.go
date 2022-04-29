@@ -4,12 +4,15 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 
+	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func Auth(conn *sql.DB) {
+func Bot(conn *sql.DB) {
+
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		fmt.Println("cannot get config:", err)
@@ -29,6 +32,8 @@ func Auth(conn *sql.DB) {
 
 	updates := bot.GetUpdatesChan(u)
 
+	x, _ := scrap.GetInfoFromOnSaleInString(conn)
+	x2 := strings.Join(x, " ")
 	for update := range updates {
 		if update.Message == nil { // ignore any non-Message updates
 			continue
@@ -45,13 +50,9 @@ func Auth(conn *sql.DB) {
 		// Extract the command from the Message.
 		switch update.Message.Command() {
 		case "help":
-			msg.Text = "I understand /sayhi and /status."
-		case "sayhi":
-			msg.Text = "Hi :)"
-		case "status":
-			msg.Text = "I'm ok."
-			// case "onSale":
-			// 	msg.
+			msg.Text = "for see discounted /discount"
+		case "discount":
+			msg.Text = x2
 		default:
 			msg.Text = "I don't know that command"
 		}
