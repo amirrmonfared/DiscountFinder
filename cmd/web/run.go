@@ -18,12 +18,12 @@ func RunScrap(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	return scrap, nil
 }
 
-func RunDiscountFinder(conn *sql.DB) ([]scrap.ProductOnSale, error) {
-	discount, err := scrap.DiscountFinder(conn)
+func RunDiscountFinder(conn *sql.DB)  error {
+	err := scrap.DiscountFinder(conn)
 	if err != nil {
 		fmt.Println(err)
 	}
-	return discount, nil
+	return nil
 }
 
 func RunBot(conn *sql.DB) {

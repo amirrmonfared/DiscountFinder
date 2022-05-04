@@ -9,9 +9,8 @@ import (
 )
 
 func TestDiscountFinder(t *testing.T) {
-	product, err := DiscountFinder(testDB)
+	err := DiscountFinder(testDB)
 	require.NoError(t, err)
-	require.NotEmpty(t, product)
 }
 
 func TestCollectorOnHTML2(t *testing.T) {

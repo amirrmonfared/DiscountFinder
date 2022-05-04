@@ -4,19 +4,32 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gocolly/colly"
 )
 
 //DiscountFinder store OnSale products
-func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
+func DiscountFinder(conn *sql.DB) error {
 	store := db.NewStore(conn)
 	//collecting data from the first table and reviewed slice
-	fromFirst, review, _, _ := collector(conn)
-	fromSecond, _ := uniqueReview(review)
-	onSale, _ := differences(fromFirst, fromSecond)
-	fromOnSale, _ := uniqueOnSale(onSale)
+	fromFirst, review, _, err := collector(conn)
+	if err != nil {
+		log.Println(err)
+	}
+	fromSecond, err := uniqueReview(review)
+	if err != nil {
+		log.Println(err)
+	}
+	onSale, err := differences(fromFirst, fromSecond)
+	if err != nil {
+		log.Println(err)
+	}
+	fromOnSale, err := uniqueOnSale(onSale)
+	if err != nil {
+		log.Println(err)
+	}
 
 	// iterating over fromOnSale slice to storing elements in table on_sale
 	for i := 0; i < len(fromOnSale); i++ {
@@ -30,7 +43,7 @@ func DiscountFinder(conn *sql.DB) ([]ProductOnSale, error) {
 		fmt.Println("The product is at discount")
 	}
 
-	return ProductsOnSale, nil
+	return nil
 
 }
 
