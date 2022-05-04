@@ -74,31 +74,3 @@ func getInfoFromOnSale(conn *sql.DB) ([]ProductOnSale, error) {
 
 	return ProductsOnSale, nil
 }
-
-var ProductsOnSaleInString = make([]string, 0, 200)
-//getInfoFromOnSale tries to get nesseccasry information
-func GetInfoFromOnSaleInString(conn *sql.DB) ([]string, error) {
-	store := db.NewStore(conn)
-
-	length, err := store.GetLengthOnSale(context.Background())
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	arg := db.ListOnSaleParams{
-		Limit:  int32(length),
-		Offset: 0,
-	}
-
-	listOnSale, err := store.ListOnSale(context.Background(), arg)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	for _, a := range listOnSale {
-
-		ProductsOnSaleInString = append(ProductsOnSaleInString, a.Brand, a.Link, a.PrvPrice, a.Price)
-	}
-
-	return ProductsOnSaleInString, nil
-}
