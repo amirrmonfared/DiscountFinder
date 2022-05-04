@@ -66,8 +66,6 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateFirstProduct
 		return err
 	})
 
-	fmt.Println("Product saved")
-
 	return result, err
 }
 
