@@ -9,6 +9,9 @@ createdb:
 dropdb:
 	docker exec -it crawler dropdb --username=root crawler
 
+psql:
+	docker exec -it crawler psql -U root -d crawler
+
 migrateup: 
 	migrate -path db/migration -database "postgresql://root:password@localhost:8082/crawler?sslmode=disable" -verbose up
 
@@ -27,10 +30,7 @@ mock:
 root:
 	docker exec -it crawler /bin/sh
 
-psql:
-	docker exec -it crawler psql -U root -d task
-
 db_schema: 
 	migrate create -ext sql -dir db/migration -seq init_schema
 
-.PHONY: run	postgres createdb dropdb migrateup migratedown sqlc mock test root psql db_schema
+.PHONY: run	postgres createdb dropdb migrateup migratedown sqlc mock test root psql db_schema psql
