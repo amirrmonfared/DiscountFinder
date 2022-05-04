@@ -11,7 +11,7 @@ import (
 func TestDiscountFinder(t *testing.T) {
 	product, err := DiscountFinder(testDB)
 	require.NoError(t, err)
-	require.Empty(t, product)
+	require.NotEmpty(t, product)
 }
 
 func TestCollectorOnHTML2(t *testing.T) {
