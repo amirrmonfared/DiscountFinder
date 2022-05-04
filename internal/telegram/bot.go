@@ -34,7 +34,10 @@ func Bot(conn *sql.DB) {
 		return
 	}
 
-	length, _ := store.GetLengthOnSale(context.Background())
+	length, err := store.GetLengthOnSale(context.Background())
+	if err != nil {
+		log.Println(err)
+	}
 
 	b.Handle("/hello", func(ctx tele.Context) error {
 		return ctx.Send("Hello!")
@@ -43,7 +46,11 @@ func Bot(conn *sql.DB) {
 	b.Handle("/discount", func(ctx tele.Context) error {
 		if IMTRUE == true {
 			for i := 0; i < int(length); i++ {
-				list, _ := getListOfOnSale(conn, int32(i))
+				list, err := getListOfOnSale(conn, int32(i))
+				if err != nil {
+					log.Println(err)
+					ctx.Send("error")
+				}
 
 				ctx.Send(list)
 			} 
@@ -58,10 +65,13 @@ func getListOfOnSale(conn *sql.DB, offset int32) (string, error) {
 	var result []string
 	store := db.NewStore(conn)
 
-	list, _ := store.ListOnSale(context.Background(), db.ListOnSaleParams{
+	list, err := store.ListOnSale(context.Background(), db.ListOnSaleParams{
 		Limit: 10,
 		Offset: offset,
 	})
+	if err != nil {
+		log.Println(err)
+	}
 
 	for _, j := range list{
 		result = append(result,"next", j.Brand, j.Link, j.Price)
