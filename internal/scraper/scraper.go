@@ -3,7 +3,8 @@ package scrap
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"log"
+	"time"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/gocolly/colly"
@@ -12,6 +13,8 @@ import (
 //Scraper starts scraping on webpage and stores products on first product table.
 func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	store := db.NewStore(conn)
+
+	imFalse := false
 
 	// Instantiate default collector
 	collector := colly.NewCollector(
@@ -34,10 +37,13 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 				Link:  i.Link,
 				Price: i.Price,
 			})
-			fmt.Printf("Brand %s Price %s was found!\n", i.Brand, i.Price)
 			//to remove last element in slice
 			removeProduct()
 		}
+	})
+
+	time.AfterFunc(30*time.Second, func() {
+		imFalse = true
 	})
 
 	// Visit next page
@@ -46,14 +52,22 @@ func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
 	})
 
 	collector.OnResponse(func(r *colly.Response) {
-	//	fmt.Println("Status Code:", r.StatusCode)
 	})
 
 	collector.OnRequest(func(r *colly.Request) {
-	//	fmt.Println("Visiting", r.URL.String())
+		imTrue := true
+		if imFalse == imTrue {
+			panic("exit")
+		}
 	})
 
-	// Start scraping on Trendyol.com
+	defer func() {
+		if r := recover(); r != nil {
+			log.Println("exit crawl")
+		}
+	}()
+
+	// Start scraping on URL
 	collector.Visit(webPage)
 
 	return collector, nil
