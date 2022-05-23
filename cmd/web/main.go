@@ -35,13 +35,13 @@ func main() {
 		fmt.Println("cannot connect to server", err)
 	}
 
-	go RunScrap(webPage, conn)
-	go RunBot(conn)
+	go RunScrap(webPage, store)
+	go RunBot(store)
 
-	gocron.Every(2).Minutes().Do(RunScrap, webPage, conn)
-	gocron.Every(1).Minutes().Do(RunDiscountFinder, conn)
-	gocron.Every(1).Minutes().Do(RunRemoveFirst, conn)
-	gocron.Every(1).Minutes().Do(RunRemoveOnSale, conn)
+	gocron.Every(2).Minutes().Do(RunScrap, webPage, store)
+	gocron.Every(1).Minutes().Do(RunDiscountFinder, store)
+	gocron.Every(10).Minutes().Do(RunRemoveFirst, store)
+	gocron.Every(10).Minutes().Do(RunRemoveOnSale, store)
 
 	<- gocron.Start()
 

@@ -2,15 +2,12 @@ package scrap
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 )
 
-//getInfoFromFirst tries to get nesseccasry information
-func getInfoFromFirst(conn *sql.DB) ([]ProductFromFirst, error) {
-	store := db.NewStore(conn)
+func getInfoFromProduct(store db.Store) ([]ProductFromFirst, error) {
 
 	length, err := store.GetLengthOfFirst(context.Background())
 	if err != nil {
@@ -42,9 +39,7 @@ func getInfoFromFirst(conn *sql.DB) ([]ProductFromFirst, error) {
 }
 
 //getInfoFromOnSale tries to get nesseccasry information
-func getInfoFromOnSale(conn *sql.DB) ([]ProductOnSale, error) {
-	store := db.NewStore(conn)
-
+func getInfoFromOnSale(store db.Store) ([]ProductOnSale, error) {
 	length, err := store.GetLengthOnSale(context.Background())
 	if err != nil {
 		fmt.Println(err)
@@ -62,12 +57,12 @@ func getInfoFromOnSale(conn *sql.DB) ([]ProductOnSale, error) {
 
 	for _, a := range listOnSale {
 		productsOnSale := ProductOnSale{
-			ID: a.ID,
-			Brand: a.Brand,
-			Link:  a.Link,
-			Price: a.Price,
+			ID:       a.ID,
+			Brand:    a.Brand,
+			Link:     a.Link,
+			Price:    a.Price,
 			PrvPrice: a.PrvPrice,
-		} 
+		}
 
 		ProductsOnSale = append(ProductsOnSale, productsOnSale)
 	}

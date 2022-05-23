@@ -9,7 +9,7 @@ import (
 )
 
 func TestDiscountFinder(t *testing.T) {
-	err := DiscountFinder(testDB)
+	err := DiscountFinder(TestStore)
 	require.NoError(t, err)
 }
 
@@ -17,7 +17,7 @@ func TestCollectorOnHTML2(t *testing.T) {
 	ts := Ts
 	defer ts.Close()
 
-	_, _, c, err := collector(testDB)
+	_, _, c, err := collector(TestStore)
 	if err != nil {
 		fmt.Println(err)
 	}

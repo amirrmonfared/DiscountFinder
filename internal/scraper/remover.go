@@ -2,15 +2,13 @@ package scrap
 
 import (
 	"context"
-	"database/sql"
 	"log"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 )
 
-func ProductRemover(conn *sql.DB) {
-	store := db.NewStore(conn)
-	first, err := getInfoFromFirst(conn)
+func ProductRemover(store db.Store) {
+	first, err := getInfoFromProduct(store)
 	if err != nil {
 		log.Println(err)
 	}
@@ -20,9 +18,8 @@ func ProductRemover(conn *sql.DB) {
 	}
 }
 
-func OnSaleRemover(conn *sql.DB) {
-	store := db.NewStore(conn)
-	onSale, err := getInfoFromOnSale(conn)
+func OnSaleRemover(store db.Store) {
+	onSale, err := getInfoFromOnSale(store)
 	if err != nil {
 		log.Println(err)
 	}

@@ -1,44 +1,44 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
 	"github.com/gocolly/colly"
 )
 
-func RunScrap(webPage string, conn *sql.DB) (*colly.Collector, error) {
+func RunScrap(webPage string, store db.Store) (*colly.Collector, error) {
 	log.Println("Scrapper started")
-	scrap, err := scrap.Scraper(webPage, conn)
+	scrap, err := scrap.Scraper(webPage, store)
 	if err != nil {
 		fmt.Println(err)
 	}
 	return scrap, nil
 }
 
-func RunDiscountFinder(conn *sql.DB) error {
+func RunDiscountFinder(store db.Store) error {
 	log.Println("DiscountFinder started")
-	err := scrap.DiscountFinder(conn)
+	err := scrap.DiscountFinder(store)
 	if err != nil {
 		fmt.Println(err)
 	}
 	return nil
 }
 
-func RunBot(conn *sql.DB) {
+func RunBot(store db.Store) {
 	log.Println("Bot started")
-	telegram.Bot(conn)
+	telegram.Bot(store)
 }
 
-func RunRemoveFirst(conn *sql.DB) {
+func RunRemoveFirst(store db.Store) {
 	log.Println("First product remover started")
-	scrap.ProductRemover(conn)
+	scrap.ProductRemover(store)
 }
 
-func RunRemoveOnSale(conn *sql.DB) {
+func RunRemoveOnSale(store db.Store) {
 	log.Println("OnSale remover started")
-	scrap.OnSaleRemover(conn)
+	scrap.OnSaleRemover(store)
 }

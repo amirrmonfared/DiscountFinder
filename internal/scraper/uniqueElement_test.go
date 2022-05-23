@@ -7,9 +7,9 @@ import (
 )
 
 func TestUniqueReview(t *testing.T) {
-	fromFirst, _ := getInfoFromFirst(testDB)
+	fromFirst, _ := getInfoFromProduct(TestStore)
 	for _, b := range fromFirst {
-		
+
 		productForReview := ProductForReview{
 			ID:    b.ID,
 			Brand: b.Brand,
@@ -26,7 +26,7 @@ func TestUniqueReview(t *testing.T) {
 }
 
 func TestUniqueOnSale(t *testing.T) {
-	onSale, _ := getInfoFromOnSale(testDB)
+	onSale, _ := getInfoFromOnSale(TestStore)
 	copy(onSale, onSale)
 	product, err := uniqueOnSale(onSale)
 	require.NoError(t, err)

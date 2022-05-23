@@ -2,7 +2,6 @@ package scrap
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -11,10 +10,9 @@ import (
 )
 
 //DiscountFinder store OnSale products
-func DiscountFinder(conn *sql.DB) error {
-	store := db.NewStore(conn)
+func DiscountFinder(store db.Store) error {
 	//collecting data from the first table and reviewed slice
-	fromFirst, review, _, err := collector(conn)
+	fromFirst, review, _, err := collector(store)
 	if err != nil {
 		log.Println(err)
 	}
@@ -48,8 +46,8 @@ func DiscountFinder(conn *sql.DB) error {
 }
 
 // collector trying to collect product from first table and storing products into slice
-func collector(conn *sql.DB) ([]ProductFromFirst, []ProductForReview, *colly.Collector, error) {
-	firstProducts, err := getInfoFromFirst(conn)
+func collector(store db.Store) ([]ProductFromFirst, []ProductForReview, *colly.Collector, error) {
+	firstProducts, err := getInfoFromProduct(store)
 	if err != nil {
 		fmt.Println("cannot get first Products", err)
 	}

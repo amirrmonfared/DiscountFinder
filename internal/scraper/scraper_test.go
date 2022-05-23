@@ -45,7 +45,7 @@ func TestCollectorOnHTML(t *testing.T) {
 	ts := Ts
 	defer ts.Close()
 
-	c, err := Scraper(ts.URL, testDB)
+	c, err := Scraper(ts.URL, TestStore)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -1,4 +1,4 @@
-CREATE TABLE "first" (
+CREATE TABLE "products" (
   "id" bigserial PRIMARY KEY NOT NULL,
   "brand" varchar NOT NULL,
   "link" varchar UNIQUE NOT NULL,
@@ -15,6 +15,6 @@ CREATE TABLE "on_sale" (
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 
-CREATE INDEX ON "first" ("link");
+CREATE INDEX ON "product" ("link");
 
 CREATE INDEX ON "on_sale" ("link");

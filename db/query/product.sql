@@ -1,4 +1,4 @@
--- name: CreateFirstProduct :one
+-- name: CreatetProduct :one
 INSERT INTO first (
   brand,
   link,
@@ -7,22 +7,22 @@ INSERT INTO first (
   $1, $2, $3
 ) RETURNING *;
 
--- name: GetFirstProduct :one
+-- name: GetProduct :one
 SELECT * FROM first
 WHERE id = $1 LIMIT 1;
 
--- name: GetFirstProductForUpdate :one
+-- name: GetProductForUpdate :one
 SELECT * FROM first
 WHERE id = $1 LIMIT 1
 FOR NO KEY UPDATE;
 
--- name: UpdateFirstProduct :one
+-- name: UpdateProduct :one
 UPDATE first
 SET price = $2
 WHERE id = $1
 RETURNING *;
 
--- name: ListFirstProduct :many
+-- name: ListProduct :many
 SELECT * FROM first
 ORDER BY id
 LIMIT $1

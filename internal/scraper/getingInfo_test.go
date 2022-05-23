@@ -10,14 +10,14 @@ import (
 )
 
 func TestGetInfoFromFirst(t *testing.T) {
-	info, err := getInfoFromFirst(testDB)
+	info, err := getInfoFromProduct(TestStore)
 	require.NoError(t, err)
 	require.NotEmpty(t, info)
 }
 
 func TestGetInfoFromOnSale(t *testing.T) {
 	CreateRandomRowOnSale(t)
-	info, err := getInfoFromOnSale(testDB)
+	info, err := getInfoFromOnSale(TestStore)
 	require.NoError(t, err)
 	require.NotEmpty(t, info)
 }

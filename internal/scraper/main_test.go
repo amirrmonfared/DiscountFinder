@@ -12,6 +12,7 @@ import (
 
 var testQueries *db.Queries
 var testDB *sql.DB
+var TestStore db.Store
 
 func TestMain(m *testing.M) {
 	config, err := util.LoadConfig("../..")
@@ -24,7 +25,10 @@ func TestMain(m *testing.M) {
 		log.Fatal("cannot connect to db:", err)
 	}
 
+	TestStore = db.NewStore(testDB)
+
 	testQueries = db.New(testDB)
 
 	os.Exit(m.Run())
 }
+

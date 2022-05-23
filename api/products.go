@@ -10,13 +10,13 @@ import (
 	"github.com/lib/pq"
 )
 
-type createFirstProductRequest struct {
+type createProductRequest struct {
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price string `json:"price"`
 }
 
-type createFirstProductRespones struct {
+type createProductRespones struct {
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price string `json:"price"`
@@ -24,7 +24,7 @@ type createFirstProductRespones struct {
 }
 
 func (server *Server) createFirstProduct(ctx *gin.Context) {
-	var req createFirstProductRequest
+	var req createProductRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
@@ -49,7 +49,7 @@ func (server *Server) createFirstProduct(ctx *gin.Context) {
 		return
 	}
 
-	rsp := createFirstProductRespones{
+	rsp := createProductRespones{
 		Brand: product.Brand,
 		Link: product.Link,
 		Price: product.Price,

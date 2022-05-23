@@ -2,7 +2,6 @@ package scrap
 
 import (
 	"context"
-	"database/sql"
 	"log"
 	"time"
 
@@ -10,10 +9,10 @@ import (
 	"github.com/gocolly/colly"
 )
 
-//Scraper starts scraping on webpage and stores products on first product table.
-func Scraper(webPage string, conn *sql.DB) (*colly.Collector, error) {
-	store := db.NewStore(conn)
 
+
+//Scraper starts scraping on webpage and stores products on first product table.
+func Scraper(webPage string, store db.Store) (*colly.Collector, error) {
 	imFalse := false
 
 	// Instantiate default collector

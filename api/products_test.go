@@ -19,7 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func randomFirstProductId() db.First {
+func randomProductWithID() db.First {
 	return db.First{
 		ID:    util.RandomInt(1, 5),
 		Brand: util.RandomString(5),
@@ -27,8 +27,17 @@ func randomFirstProductId() db.First {
 		Price: util.RandomPriceString(5),
 	}
 }
+
+func randomProduct() db.First {
+	return db.First{
+		Brand: util.RandomString(5),
+		Link:  util.RandomLink(),
+		Price: util.RandomPriceString(5),
+	}
+}
+
 func TestGetFirstProductAPI(t *testing.T) {
-	product := randomFirstProductId()
+	product := randomProductWithID()
 
 	testCases := []struct {
 		name          string
@@ -47,7 +56,7 @@ func TestGetFirstProductAPI(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchFirst(t, recorder.Body, product)
+				requireBodyMatchForProduct(t, recorder.Body, product)
 			},
 		},
 		{
@@ -113,15 +122,7 @@ func TestGetFirstProductAPI(t *testing.T) {
 	}
 }
 
-func randomFirstProduct() db.First {
-	return db.First{
-		Brand: util.RandomString(5),
-		Link:  util.RandomLink(),
-		Price: util.RandomPriceString(5),
-	}
-}
-
-func requireBodyMatchFirst(t *testing.T, body *bytes.Buffer, user db.First) {
+func requireBodyMatchForProduct(t *testing.T, body *bytes.Buffer, user db.First) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)
 
@@ -132,7 +133,7 @@ func requireBodyMatchFirst(t *testing.T, body *bytes.Buffer, user db.First) {
 }
 
 func TestCreateFirstProductAPI(t *testing.T) {
-	product := randomFirstProduct()
+	product := randomProduct()
 
 	testCases := []struct {
 		name          string
@@ -161,7 +162,7 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchFirst(t, recorder.Body, product)
+				requireBodyMatchForProduct(t, recorder.Body, product)
 			},
 		},
 		{
@@ -243,23 +244,12 @@ func TestCreateFirstProductAPI(t *testing.T) {
 	}
 }
 
-func requireBodyMatchFirsts(t *testing.T, body *bytes.Buffer, firsts []db.First) {
-	data, err := ioutil.ReadAll(body)
-	require.NoError(t, err)
-
-	var gotFirsts []db.First
-	err = json.Unmarshal(data, &gotFirsts)
-	require.NoError(t, err)
-	require.Equal(t, firsts, gotFirsts)
-}
-
 func TestListFirstsAPI(t *testing.T) {
-	//	product:= randomFirstProduct()
 
 	n := 5
 	products := make([]db.First, n)
 	for i := 0; i < n; i++ {
-		products[i] = randomFirstProduct()
+		products[i] = randomProduct()
 	}
 
 	type Query struct {
@@ -292,7 +282,7 @@ func TestListFirstsAPI(t *testing.T) {
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchFirsts(t, recorder.Body, products)
+				requireBodyMatchForListProducts(t, recorder.Body, products)
 			},
 		},
 		{
@@ -339,4 +329,14 @@ func TestListFirstsAPI(t *testing.T) {
 			tc.checkResponse(recorder)
 		})
 	}
+}
+
+func requireBodyMatchForListProducts(t *testing.T, body *bytes.Buffer, firsts []db.First) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotFirsts []db.First
+	err = json.Unmarshal(data, &gotFirsts)
+	require.NoError(t, err)
+	require.Equal(t, firsts, gotFirsts)
 }
