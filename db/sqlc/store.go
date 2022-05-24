@@ -8,9 +8,8 @@ import (
 
 type Store interface {
 	Querier
-	CreateProduct(ctx context.Context, arg CreateFirstProductParams) (CreateProductResult, error)
-	LengthOfFirst(ctx context.Context) (int64, error)
-	LengthOfOnSale(ctx context.Context) (int64, error)
+	StoreProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error)
+	StoreOnSale(ctx context.Context, arg CreateOnSaleParams) (CreateOnSaleResult, error)
 }
 
 // SQLStore provides all functions to excute db queries
@@ -45,17 +44,17 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 }
 
 type CreateProductResult struct {
-	First First `json:"first"`
+	Product Product `json:"product"`
 }
 
-func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateFirstProductParams) (CreateProductResult, error) {
+func (store *SQLStore) StoreProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error) {
 	var result CreateProductResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
 
 		var err error
 
-		result.First, err = q.CreateFirstProduct(ctx, CreateFirstProductParams{
+		result.Product, err = q.CreateProduct(ctx, CreateProductParams{
 			Brand: arg.Brand,
 			Link:  arg.Link,
 			Price: arg.Price,
@@ -69,36 +68,28 @@ func (store *SQLStore) CreateProduct(ctx context.Context, arg CreateFirstProduct
 	return result, err
 }
 
-func (store *SQLStore) LengthOfFirst(ctx context.Context) (int64, error) {
-	var result int64
-
-	err := store.execTx(ctx, func(q *Queries) error {
-		var err error
-
-		result, err = q.GetLengthOfFirst(ctx)
-		if err != nil {
-			return err
-		}
-		return err
-	})
-	fmt.Println(result)
-
-	return result, err
+type CreateOnSaleResult struct {
+	OnSale OnSale `json:"pn_sale"`
 }
 
-func (store *SQLStore) LengthOfOnSale(ctx context.Context) (int64, error) {
-	var result int64
+func (store *SQLStore) StoreOnSale(ctx context.Context, arg CreateOnSaleParams) (CreateOnSaleResult, error) {
+	var result CreateOnSaleResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
+
 		var err error
 
-		result, err = q.GetLengthOnSale(ctx)
+		result.OnSale, err = q.CreateOnSale(ctx, CreateOnSaleParams{
+			Brand:         arg.Brand,
+			Link:          arg.Link,
+			Price:         arg.Price,
+			PreviousPrice: arg.PreviousPrice,
+		})
 		if err != nil {
 			return err
 		}
 		return err
 	})
-	fmt.Println(result)
 
 	return result, err
 }

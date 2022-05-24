@@ -9,17 +9,19 @@ import (
 
 func getInfoFromProduct(store db.Store) ([]ProductFromFirst, error) {
 
-	length, err := store.GetLengthOfFirst(context.Background())
+	length, err := store.GetLengthOfProducts(context.Background())
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	arg := db.ListFirstProductParams{
+
+
+	arg := db.ListProductParams{
 		Limit:  int32(length),
 		Offset: 0,
 	}
 
-	listFirst, err := store.ListFirstProduct(context.Background(), arg)
+	listFirst, err := store.ListProduct(context.Background(), arg)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -61,7 +63,7 @@ func getInfoFromOnSale(store db.Store) ([]ProductOnSale, error) {
 			Brand:    a.Brand,
 			Link:     a.Link,
 			Price:    a.Price,
-			PrvPrice: a.PrvPrice,
+			PrvPrice: a.PreviousPrice,
 		}
 
 		ProductsOnSale = append(ProductsOnSale, productsOnSale)

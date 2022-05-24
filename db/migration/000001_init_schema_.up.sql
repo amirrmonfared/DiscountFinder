@@ -11,10 +11,10 @@ CREATE TABLE "on_sale" (
   "brand" varchar NOT NULL,
   "link" varchar UNIQUE NOT NULL,
   "price" varchar NOT NULL,
-  "prv_price" varchar NOT NULL,
+  "previous_price" varchar NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT 'now()'
 );
 
-CREATE INDEX ON "product" ("link");
+CREATE INDEX ON "products" ("link");
 
 CREATE INDEX ON "on_sale" ("link");

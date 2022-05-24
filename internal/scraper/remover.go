@@ -14,7 +14,7 @@ func ProductRemover(store db.Store) {
 	}
 
 	for _, j := range first {
-		store.DeleteFirstProduct(context.Background(), j.ID)
+		store.DeleteProduct(context.Background(), j.ID)
 	}
 }
 

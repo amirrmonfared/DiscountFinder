@@ -8,6 +8,7 @@ import (
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
 	"github.com/gocolly/colly"
+	"github.com/jasonlvhit/gocron"
 )
 
 func RunScrap(webPage string, store db.Store) (*colly.Collector, error) {
@@ -41,4 +42,14 @@ func RunRemoveFirst(store db.Store) {
 func RunRemoveOnSale(store db.Store) {
 	log.Println("OnSale remover started")
 	scrap.OnSaleRemover(store)
+}
+
+func cronJob(store db.Store) {
+	
+	gocron.Every(2).Minutes().Do(RunScrap, webPage, store)
+	gocron.Every(1).Minutes().Do(RunDiscountFinder, store)
+	gocron.Every(10).Minutes().Do(RunRemoveFirst, store)
+	gocron.Every(10).Minutes().Do(RunRemoveOnSale, store)
+
+	<-gocron.Start()
 }

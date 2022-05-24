@@ -1,5 +1,5 @@
--- name: CreatetProduct :one
-INSERT INTO first (
+-- name: CreateProduct :one
+INSERT INTO products (
   brand,
   link,
   price
@@ -8,30 +8,25 @@ INSERT INTO first (
 ) RETURNING *;
 
 -- name: GetProduct :one
-SELECT * FROM first
+SELECT * FROM products
 WHERE id = $1 LIMIT 1;
 
--- name: GetProductForUpdate :one
-SELECT * FROM first
-WHERE id = $1 LIMIT 1
-FOR NO KEY UPDATE;
-
 -- name: UpdateProduct :one
-UPDATE first
+UPDATE products
 SET price = $2
 WHERE id = $1
 RETURNING *;
 
 -- name: ListProduct :many
-SELECT * FROM first
+SELECT * FROM products
 ORDER BY id
 LIMIT $1
 OFFSET $2;
 
--- name: DeleteFirstProduct :exec
-DELETE FROM first
+-- name: DeleteProduct :exec
+DELETE FROM products
 WHERE id = $1;
 
--- name: GetLengthOfFirst :one
+-- name: GetLengthOfProducts :one
 SELECT count(id) 
-FROM first;
+FROM products;

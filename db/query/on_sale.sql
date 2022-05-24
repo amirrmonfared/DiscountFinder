@@ -3,7 +3,7 @@ INSERT INTO on_sale (
   brand,
   link,
   price,
-  prv_price
+  previous_price
 ) VALUES (
   $1, $2, $3, $4
 ) RETURNING *;
@@ -11,11 +11,6 @@ INSERT INTO on_sale (
 -- name: GetOnSale :one
 SELECT * FROM on_sale
 WHERE id = $1 LIMIT 1;
-
--- name: GetOnSaleForUpdate :one
-SELECT * FROM on_sale
-WHERE id = $1 LIMIT 1
-FOR NO KEY UPDATE;
 
 -- name: UpdateOnSale :one
 UPDATE on_sale

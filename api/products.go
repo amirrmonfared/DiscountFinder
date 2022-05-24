@@ -23,20 +23,20 @@ type createProductRespones struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (server *Server) createFirstProduct(ctx *gin.Context) {
+func (server *Server) createProduct(ctx *gin.Context) {
 	var req createProductRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	arg := db.CreateFirstProductParams{
+	arg := db.CreateProductParams{
 		Brand: req.Brand,
 		Link: req.Link,
 		Price: req.Price,
 	}
 
-	product, err := server.store.CreateFirstProduct(ctx, arg)
+	product, err := server.store.CreateProduct(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
@@ -63,14 +63,14 @@ type getProductRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
-func (server *Server) getFirstProduct(ctx *gin.Context) {
+func (server *Server) getProduct(ctx *gin.Context) {
 	var req getProductRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	product, err := server.store.GetFirstProduct(ctx, req.ID)
+	product, err := server.store.GetProduct(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -89,19 +89,19 @@ type listProductRequest struct {
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
-func (server *Server) listFirstsProduct(ctx *gin.Context) {
+func (server *Server) listProduct(ctx *gin.Context) {
 	var req listProductRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	arg := db.ListFirstProductParams{
+	arg := db.ListProductParams{
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	product, err := server.store.ListFirstProduct(ctx, arg)
+	product, err := server.store.ListProduct(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

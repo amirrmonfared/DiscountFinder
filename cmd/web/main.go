@@ -8,7 +8,6 @@ import (
 	"github.com/amirrmonfared/DiscountFinder/api"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/amirrmonfared/DiscountFinder/util"
-	"github.com/jasonlvhit/gocron"
 	_ "github.com/lib/pq"
 )
 
@@ -37,13 +36,7 @@ func main() {
 
 	go RunScrap(webPage, store)
 	go RunBot(store)
-
-	gocron.Every(2).Minutes().Do(RunScrap, webPage, store)
-	gocron.Every(1).Minutes().Do(RunDiscountFinder, store)
-	gocron.Every(10).Minutes().Do(RunRemoveFirst, store)
-	gocron.Every(10).Minutes().Do(RunRemoveOnSale, store)
-
-	<- gocron.Start()
+	go cronJob(store)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {

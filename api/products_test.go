@@ -19,8 +19,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func randomProductWithID() db.First {
-	return db.First{
+func randomProductWithID() db.Product {
+	return db.Product{
 		ID:    util.RandomInt(1, 5),
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
@@ -28,8 +28,8 @@ func randomProductWithID() db.First {
 	}
 }
 
-func randomProduct() db.First {
-	return db.First{
+func randomProduct() db.Product {
+	return db.Product{
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
 		Price: util.RandomPriceString(5),
@@ -50,7 +50,7 @@ func TestGetFirstProductAPI(t *testing.T) {
 			productID: product.ID,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetFirstProduct(gomock.Any(), gomock.Eq(product.ID)).
+					GetProduct(gomock.Any(), gomock.Eq(product.ID)).
 					Times(1).
 					Return(product, nil)
 			},
@@ -64,9 +64,9 @@ func TestGetFirstProductAPI(t *testing.T) {
 			productID: product.ID,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetFirstProduct(gomock.Any(), gomock.Eq(product.ID)).
+					GetProduct(gomock.Any(), gomock.Eq(product.ID)).
 					Times(1).
-					Return(db.First{}, sql.ErrNoRows)
+					Return(db.Product{}, sql.ErrNoRows)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusNotFound, recorder.Code)
@@ -77,9 +77,9 @@ func TestGetFirstProductAPI(t *testing.T) {
 			productID: product.ID,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetFirstProduct(gomock.Any(), gomock.Eq(product.ID)).
+					GetProduct(gomock.Any(), gomock.Eq(product.ID)).
 					Times(1).
-					Return(db.First{}, sql.ErrConnDone)
+					Return(db.Product{}, sql.ErrConnDone)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -90,7 +90,7 @@ func TestGetFirstProductAPI(t *testing.T) {
 			productID: 0,
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					GetFirstProduct(gomock.Any(), gomock.Any()).
+					GetProduct(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(t *testing.T, recorder *httptest.ResponseRecorder) {
@@ -122,17 +122,17 @@ func TestGetFirstProductAPI(t *testing.T) {
 	}
 }
 
-func requireBodyMatchForProduct(t *testing.T, body *bytes.Buffer, user db.First) {
+func requireBodyMatchForProduct(t *testing.T, body *bytes.Buffer, user db.Product) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)
 
-	var gotFirst db.First
-	err = json.Unmarshal(data, &gotFirst)
+	var gotProduct db.Product
+	err = json.Unmarshal(data, &gotProduct)
 	require.NoError(t, err)
-	require.Equal(t, user, gotFirst)
+	require.Equal(t, user, gotProduct)
 }
 
-func TestCreateFirstProductAPI(t *testing.T) {
+func TestCreateProductAPI(t *testing.T) {
 	product := randomProduct()
 
 	testCases := []struct {
@@ -149,14 +149,14 @@ func TestCreateFirstProductAPI(t *testing.T) {
 				"price": product.Price,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				arg := db.CreateFirstProductParams{
+				arg := db.CreateProductParams{
 
 					Brand: product.Brand,
 					Link:  product.Link,
 					Price: product.Price,
 				}
 				store.EXPECT().
-					CreateFirstProduct(gomock.Any(), gomock.Eq(arg)).
+					CreateProduct(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
 					Return(product, nil)
 			},
@@ -174,9 +174,9 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					CreateFirstProduct(gomock.Any(), gomock.Any()).
+					CreateProduct(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.First{}, sql.ErrConnDone)
+					Return(db.Product{}, sql.ErrConnDone)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -191,9 +191,9 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					CreateFirstProduct(gomock.Any(), gomock.Any()).
+					CreateProduct(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.First{}, &pq.Error{Code: "23505"})
+					Return(db.Product{}, &pq.Error{Code: "23505"})
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusForbidden, recorder.Code)
@@ -208,7 +208,7 @@ func TestCreateFirstProductAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					CreateFirstProduct(gomock.Any(), gomock.Any()).
+					CreateProduct(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -244,10 +244,10 @@ func TestCreateFirstProductAPI(t *testing.T) {
 	}
 }
 
-func TestListFirstsAPI(t *testing.T) {
+func TestListAPI(t *testing.T) {
 
 	n := 5
-	products := make([]db.First, n)
+	products := make([]db.Product, n)
 	for i := 0; i < n; i++ {
 		products[i] = randomProduct()
 	}
@@ -270,13 +270,13 @@ func TestListFirstsAPI(t *testing.T) {
 				pageSize: n,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				arg := db.ListFirstProductParams{
+				arg := db.ListProductParams{
 					Limit:  int32(n),
 					Offset: 0,
 				}
 
 				store.EXPECT().
-					ListFirstProduct(gomock.Any(), gomock.Eq(arg)).
+					ListProduct(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
 					Return(products, nil)
 			},
@@ -293,7 +293,7 @@ func TestListFirstsAPI(t *testing.T) {
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					ListFirstProduct(gomock.Any(), gomock.Any()).
+					ListProduct(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -331,12 +331,12 @@ func TestListFirstsAPI(t *testing.T) {
 	}
 }
 
-func requireBodyMatchForListProducts(t *testing.T, body *bytes.Buffer, firsts []db.First) {
+func requireBodyMatchForListProducts(t *testing.T, body *bytes.Buffer, firsts []db.Product) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)
 
-	var gotFirsts []db.First
-	err = json.Unmarshal(data, &gotFirsts)
+	var gotProducts []db.Product
+	err = json.Unmarshal(data, &gotProducts)
 	require.NoError(t, err)
-	require.Equal(t, firsts, gotFirsts)
+	require.Equal(t, firsts, gotProducts)
 }

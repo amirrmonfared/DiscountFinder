@@ -35,7 +35,7 @@ func DiscountFinder(store db.Store) error {
 			Brand:    fromFirst[i].Brand,
 			Link:     fromFirst[i].Link,
 			Price:    fromSecond[i].Price,
-			PrvPrice: fromFirst[i].Price,
+			PreviousPrice: fromFirst[i].Price,
 		})
 
 		fmt.Println("The product is at discount")
