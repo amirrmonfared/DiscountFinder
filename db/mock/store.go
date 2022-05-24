@@ -199,10 +199,10 @@ func (mr *MockStoreMockRecorder) StoreOnSale(arg0, arg1 interface{}) *gomock.Cal
 }
 
 // StoreProduct mocks base method.
-func (m *MockStore) StoreProduct(arg0 context.Context, arg1 db.CreateProductParams) (db.CreateProductResult, error) {
+func (m *MockStore) StoreProduct(arg0 context.Context, arg1 db.StoreProductParams) (db.StoreProductResult, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "StoreProduct", arg0, arg1)
-	ret0, _ := ret[0].(db.CreateProductResult)
+	ret0, _ := ret[0].(db.StoreProductResult)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

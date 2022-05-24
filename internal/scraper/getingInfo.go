@@ -14,8 +14,6 @@ func getInfoFromProduct(store db.Store) ([]ProductFromFirst, error) {
 		fmt.Println(err)
 	}
 
-
-
 	arg := db.ListProductParams{
 		Limit:  int32(length),
 		Offset: 0,

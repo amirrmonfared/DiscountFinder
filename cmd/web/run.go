@@ -48,8 +48,8 @@ func cronJob(store db.Store) {
 	
 	gocron.Every(2).Minutes().Do(RunScrap, webPage, store)
 	gocron.Every(1).Minutes().Do(RunDiscountFinder, store)
-	gocron.Every(10).Minutes().Do(RunRemoveFirst, store)
-	gocron.Every(10).Minutes().Do(RunRemoveOnSale, store)
+	gocron.Every(2).Minutes().Do(RunRemoveFirst, store)
+	gocron.Every(2).Minutes().Do(RunRemoveOnSale, store)
 
 	<-gocron.Start()
 }

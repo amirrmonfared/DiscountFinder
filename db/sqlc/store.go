@@ -8,7 +8,7 @@ import (
 
 type Store interface {
 	Querier
-	StoreProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error)
+	StoreProduct(ctx context.Context, arg StoreProductParams) (StoreProductResult, error)
 	StoreOnSale(ctx context.Context, arg CreateOnSaleParams) (CreateOnSaleResult, error)
 }
 
@@ -43,12 +43,18 @@ func (store *SQLStore) execTx(ctx context.Context, fn func(*Queries) error) erro
 	return tx.Commit()
 }
 
-type CreateProductResult struct {
+type StoreProductParams struct {
+	Brand string `json:"brand"`
+	Link  string `json:"link"`
+	Price string `json:"price"`
+}
+
+type StoreProductResult struct {
 	Product Product `json:"product"`
 }
 
-func (store *SQLStore) StoreProduct(ctx context.Context, arg CreateProductParams) (CreateProductResult, error) {
-	var result CreateProductResult
+func (store *SQLStore) StoreProduct(ctx context.Context, arg StoreProductParams) (StoreProductResult, error) {
+	var result StoreProductResult
 
 	err := store.execTx(ctx, func(q *Queries) error {
 
@@ -69,7 +75,7 @@ func (store *SQLStore) StoreProduct(ctx context.Context, arg CreateProductParams
 }
 
 type CreateOnSaleResult struct {
-	OnSale OnSale `json:"pn_sale"`
+	OnSale OnSale `json:"on_sale"`
 }
 
 func (store *SQLStore) StoreOnSale(ctx context.Context, arg CreateOnSaleParams) (CreateOnSaleResult, error) {

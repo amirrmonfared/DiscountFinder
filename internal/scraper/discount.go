@@ -31,10 +31,10 @@ func DiscountFinder(store db.Store) error {
 
 	// iterating over fromOnSale slice to storing elements in table on_sale
 	for i := 0; i < len(fromOnSale); i++ {
-		store.CreateOnSale(context.Background(), db.CreateOnSaleParams{
-			Brand:    fromFirst[i].Brand,
-			Link:     fromFirst[i].Link,
-			Price:    fromSecond[i].Price,
+		store.StoreOnSale(context.Background(), db.CreateOnSaleParams{
+			Brand:         fromFirst[i].Brand,
+			Link:          fromFirst[i].Link,
+			Price:         fromSecond[i].Price,
 			PreviousPrice: fromFirst[i].Price,
 		})
 

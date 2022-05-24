@@ -12,13 +12,13 @@ func TestStoreProduct(t *testing.T) {
 	store := NewStore(testDB)
 
 	errs := make(chan error)
-	results := make(chan CreateProductResult)
+	results := make(chan StoreProductResult)
 
 	n := 5
 
 	for i := 0; i < n; i++ {
 		go func() {
-			result, err := store.StoreProduct(context.Background(), CreateProductParams{
+			result, err := store.StoreProduct(context.Background(), StoreProductParams{
 				Brand: util.RandomString(4),
 				Link:  util.RandomLink(),
 				Price: util.RandomPriceString(3),

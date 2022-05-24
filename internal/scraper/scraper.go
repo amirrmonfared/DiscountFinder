@@ -9,8 +9,6 @@ import (
 	"github.com/gocolly/colly"
 )
 
-
-
 //Scraper starts scraping on webpage and stores products on first product table.
 func Scraper(webPage string, store db.Store) (*colly.Collector, error) {
 	imFalse := false
@@ -31,7 +29,7 @@ func Scraper(webPage string, store db.Store) (*colly.Collector, error) {
 		Products = append(Products, products)
 
 		for _, i := range Products {
-			store.CreateProduct(context.Background(), db.CreateProductParams{
+			store.StoreProduct(context.Background(), db.StoreProductParams{
 				Brand: i.Brand,
 				Link:  i.Link,
 				Price: i.Price,

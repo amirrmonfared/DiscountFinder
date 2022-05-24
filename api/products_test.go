@@ -19,24 +19,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func randomProductWithID() db.Product {
-	return db.Product{
-		ID:    util.RandomInt(1, 5),
-		Brand: util.RandomString(5),
-		Link:  util.RandomLink(),
-		Price: util.RandomPriceString(5),
-	}
-}
-
-func randomProduct() db.Product {
-	return db.Product{
-		Brand: util.RandomString(5),
-		Link:  util.RandomLink(),
-		Price: util.RandomPriceString(5),
-	}
-}
-
-func TestGetFirstProductAPI(t *testing.T) {
+func TestGetProductAPI(t *testing.T) {
 	product := randomProductWithID()
 
 	testCases := []struct {
@@ -122,18 +105,8 @@ func TestGetFirstProductAPI(t *testing.T) {
 	}
 }
 
-func requireBodyMatchForProduct(t *testing.T, body *bytes.Buffer, user db.Product) {
-	data, err := ioutil.ReadAll(body)
-	require.NoError(t, err)
-
-	var gotProduct db.Product
-	err = json.Unmarshal(data, &gotProduct)
-	require.NoError(t, err)
-	require.Equal(t, user, gotProduct)
-}
-
 func TestCreateProductAPI(t *testing.T) {
-	product := randomProduct()
+	product := randomStoreProduct()
 
 	testCases := []struct {
 		name          string
@@ -144,39 +117,38 @@ func TestCreateProductAPI(t *testing.T) {
 		{
 			name: "OK",
 			body: gin.H{
-				"brand": product.Brand,
-				"link":  product.Link,
-				"price": product.Price,
+				"brand": product.Product.Brand,
+				"link":  product.Product.Link,
+				"price": product.Product.Price,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
-				arg := db.CreateProductParams{
-
-					Brand: product.Brand,
-					Link:  product.Link,
-					Price: product.Price,
+				arg := db.StoreProductParams{
+					Brand: product.Product.Brand,
+					Link:  product.Product.Link,
+					Price: product.Product.Price,
 				}
 				store.EXPECT().
-					CreateProduct(gomock.Any(), gomock.Eq(arg)).
+					StoreProduct(gomock.Any(), gomock.Eq(arg)).
 					Times(1).
 					Return(product, nil)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusOK, recorder.Code)
-				requireBodyMatchForProduct(t, recorder.Body, product)
+				requireBodyMatchForStoreProduct(t, recorder.Body, product)
 			},
 		},
 		{
 			name: "InternalError",
 			body: gin.H{
-				"brand": product.Brand,
-				"link":  product.Link,
-				"price": product.Price,
+				"brand": product.Product.Brand,
+				"link":  product.Product.Link,
+				"price": product.Product.Price,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					CreateProduct(gomock.Any(), gomock.Any()).
+					StoreProduct(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.Product{}, sql.ErrConnDone)
+					Return(db.StoreProductResult{}, sql.ErrConnDone)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusInternalServerError, recorder.Code)
@@ -185,15 +157,15 @@ func TestCreateProductAPI(t *testing.T) {
 		{
 			name: "DuplicateProduct",
 			body: gin.H{
-				"brand": product.Brand,
-				"link":  product.Link,
-				"price": product.Price,
+				"brand": product.Product.Brand,
+				"link":  product.Product.Link,
+				"price": product.Product.Price,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					CreateProduct(gomock.Any(), gomock.Any()).
+					StoreProduct(gomock.Any(), gomock.Any()).
 					Times(1).
-					Return(db.Product{}, &pq.Error{Code: "23505"})
+					Return(db.StoreProductResult{}, &pq.Error{Code: "23505"})
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
 				require.Equal(t, http.StatusForbidden, recorder.Code)
@@ -202,13 +174,13 @@ func TestCreateProductAPI(t *testing.T) {
 		{
 			name: "InvalidPrice",
 			body: gin.H{
-				"brand": product.Brand,
-				"link":  product.Link,
+				"brand": product.Product.Brand,
+				"link":  product.Product.Link,
 				"price": 1,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
-					CreateProduct(gomock.Any(), gomock.Any()).
+					StoreProduct(gomock.Any(), gomock.Any()).
 					Times(0)
 			},
 			checkResponse: func(recorder *httptest.ResponseRecorder) {
@@ -249,7 +221,7 @@ func TestListAPI(t *testing.T) {
 	n := 5
 	products := make([]db.Product, n)
 	for i := 0; i < n; i++ {
-		products[i] = randomProduct()
+		products[i] = randomProductWithID()
 	}
 
 	type Query struct {
@@ -331,6 +303,26 @@ func TestListAPI(t *testing.T) {
 	}
 }
 
+func requireBodyMatchForProduct(t *testing.T, body *bytes.Buffer, product db.Product) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotProduct db.Product
+	err = json.Unmarshal(data, &gotProduct)
+	require.NoError(t, err)
+	require.Equal(t, product, gotProduct)
+}
+
+func requireBodyMatchForStoreProduct(t *testing.T, body *bytes.Buffer, product db.StoreProductResult) {
+	data, err := ioutil.ReadAll(body)
+	require.NoError(t, err)
+
+	var gotProduct db.Product
+	err = json.Unmarshal(data, &gotProduct)
+	require.NoError(t, err)
+	require.Equal(t, product.Product, gotProduct)
+}
+
 func requireBodyMatchForListProducts(t *testing.T, body *bytes.Buffer, firsts []db.Product) {
 	data, err := ioutil.ReadAll(body)
 	require.NoError(t, err)
@@ -339,4 +331,28 @@ func requireBodyMatchForListProducts(t *testing.T, body *bytes.Buffer, firsts []
 	err = json.Unmarshal(data, &gotProducts)
 	require.NoError(t, err)
 	require.Equal(t, firsts, gotProducts)
+}
+
+func randomProductWithID() db.Product {
+	return db.Product{
+		ID:    util.RandomInt(1, 5),
+		Brand: util.RandomString(5),
+		Link:  util.RandomLink(),
+		Price: util.RandomPriceString(5),
+	}
+}
+
+func randomProduct() db.Product {
+	return db.Product{
+		Brand: util.RandomString(5),
+		Link:  util.RandomLink(),
+		Price: util.RandomPriceString(5),
+	}
+}
+
+func randomStoreProduct() db.StoreProductResult {
+	product := randomProduct()
+	return db.StoreProductResult{
+		Product: product,
+	}
 }

@@ -17,9 +17,9 @@ type createProductRequest struct {
 }
 
 type createProductRespones struct {
-	Brand string `json:"brand"`
-	Link  string `json:"link"`
-	Price string `json:"price"`
+	Brand     string    `json:"brand"`
+	Link      string    `json:"link"`
+	Price     string    `json:"price"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -30,13 +30,13 @@ func (server *Server) createProduct(ctx *gin.Context) {
 		return
 	}
 
-	arg := db.CreateProductParams{
+	arg := db.StoreProductParams{
 		Brand: req.Brand,
-		Link: req.Link,
+		Link:  req.Link,
 		Price: req.Price,
 	}
 
-	product, err := server.store.CreateProduct(ctx, arg)
+	product, err := server.store.StoreProduct(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
@@ -50,10 +50,10 @@ func (server *Server) createProduct(ctx *gin.Context) {
 	}
 
 	rsp := createProductRespones{
-		Brand: product.Brand,
-		Link: product.Link,
-		Price: product.Price,
-		CreatedAt: product.CreatedAt,
+		Brand:     product.Product.Brand,
+		Link:      product.Product.Link,
+		Price:     product.Product.Price,
+		CreatedAt: product.Product.CreatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
