@@ -3,6 +3,7 @@ package scrap
 import (
 	"testing"
 
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/stretchr/testify/require"
 )
 
@@ -10,7 +11,7 @@ func TestUniqueReview(t *testing.T) {
 	fromFirst, _ := getInfoFromProduct(TestStore)
 	for _, b := range fromFirst {
 
-		productForReview := ProductForReview{
+		productForReview := db.Product{
 			ID:    b.ID,
 			Brand: b.Brand,
 			Link:  b.Link,

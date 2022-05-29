@@ -19,7 +19,9 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		store:      store,
 	}
 	router := gin.Default()
-
+	
+	gin.SetMode(gin.ReleaseMode)
+	
 	router.POST("/product", server.createProduct)
 	router.GET("/product/:id", server.getProduct)
 	router.GET("/products", server.listProduct)

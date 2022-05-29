@@ -8,8 +8,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestDiscountFinder(t *testing.T) {
-	err := DiscountFinder(TestStore)
+func TestDiscounter(t *testing.T) {
+	err := Discounter(TestStore)
 	require.NoError(t, err)
 }
 
@@ -17,7 +17,7 @@ func TestCollectorOnHTML2(t *testing.T) {
 	ts := Ts
 	defer ts.Close()
 
-	_, _, c, err := collector(TestStore)
+	_, c, err := reviwer(TestStore)
 	if err != nil {
 		fmt.Println(err)
 	}

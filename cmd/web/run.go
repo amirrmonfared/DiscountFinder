@@ -20,12 +20,13 @@ func RunScrap(webPage string, store db.Store) (*colly.Collector, error) {
 	return scrap, nil
 }
 
-func RunDiscountFinder(store db.Store) error {
-	log.Println("DiscountFinder started")
-	err := scrap.DiscountFinder(store)
+func RunDiscounter(store db.Store) error {
+	log.Println("Discounter started")
+	err := scrap.Discounter(store)
 	if err != nil {
 		fmt.Println(err)
 	}
+	log.Println("Discounter Done!")
 	return nil
 }
 
@@ -37,19 +38,21 @@ func RunBot(store db.Store) {
 func RunRemoveFirst(store db.Store) {
 	log.Println("First product remover started")
 	scrap.ProductRemover(store)
+	log.Println("RemoveFirst Done!")
 }
 
 func RunRemoveOnSale(store db.Store) {
 	log.Println("OnSale remover started")
 	scrap.OnSaleRemover(store)
+	log.Println("RemoveOnSale Done!")
 }
 
 func cronJob(store db.Store) {
-	
-	gocron.Every(2).Minutes().Do(RunScrap, webPage, store)
-	gocron.Every(1).Minutes().Do(RunDiscountFinder, store)
-	gocron.Every(2).Minutes().Do(RunRemoveFirst, store)
-	gocron.Every(2).Minutes().Do(RunRemoveOnSale, store)
+
+	gocron.Every(1).Minutes().Do(RunScrap, webPage, store)
+	gocron.Every(1).Minutes().Do(RunDiscounter, store)
+	gocron.Every(1).Minutes().Do(RunRemoveFirst, store)
+	gocron.Every(1).Minutes().Do(RunRemoveOnSale, store)
 
 	<-gocron.Start()
 }

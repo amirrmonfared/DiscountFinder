@@ -9,10 +9,64 @@ import (
 	"github.com/gocolly/colly"
 )
 
-//DiscountFinder store OnSale products
-func DiscountFinder(store db.Store) error {
-	//collecting data from the first table and reviewed slice
-	fromFirst, review, _, err := collector(store)
+var (
+	reviewSectionTag string        = ".container-right-content"
+	reviewPriceTag   string        = ".prc-dsc"
+)
+
+// reviwer review product from product table and storing products into slice
+func reviwer(store db.Store) ([]db.Product, *colly.Collector, error) {
+	firstProducts, err := getInfoFromProduct(store)
+	if err != nil {
+		fmt.Println("cannot get first Products", err)
+	}
+
+	collector := colly.NewCollector(
+		colly.AllowedDomains(allowedURL1, allowedURL2),
+		colly.MaxDepth(0),
+	)
+
+	for _, product := range firstProducts {
+		collector.OnHTML(reviewSectionTag, func(e *colly.HTMLElement) {
+
+			productForReview := db.Product{
+				ID:    product.ID,
+				Brand: product.Brand,
+				Link:  product.Link,
+				Price: e.ChildText(reviewPriceTag),
+			}
+			ProductsForReview = append(ProductsForReview, productForReview)
+
+		})
+
+		collector.Visit(product.Link)
+	}
+
+	return ProductsForReview, collector, nil
+}
+
+func discountFinder(fromFirst []db.Product, fromSecond []db.Product) ([]db.OnSale, error) {
+
+	for i := 0; i < len(fromFirst) && i < len(fromSecond); i++ {
+		if fromFirst[i].Price > fromSecond[i].Price {
+			productsOnSale := db.OnSale{
+				ID:    fromFirst[i].ID,
+				Brand: fromFirst[i].Brand,
+				Link:  fromFirst[i].Link,
+				Price: fromSecond[i].Price,
+			}
+			ProductsOnSale = append(ProductsOnSale, productsOnSale)
+		} else {
+			//TODO: add update first product price
+			continue
+		}
+	}
+
+	return ProductsOnSale, nil
+}
+
+func uniquedForStore(store db.Store) ([]db.OnSale, error) {
+	review, _, err := reviwer(store)
 	if err != nil {
 		log.Println(err)
 	}
@@ -20,7 +74,13 @@ func DiscountFinder(store db.Store) error {
 	if err != nil {
 		log.Println(err)
 	}
-	onSale, err := differences(fromFirst, fromSecond)
+
+	fromFirst, err := getInfoFromProduct(store)
+	if err != nil {
+		log.Println(err)
+	}
+
+	onSale, err := discountFinder(fromFirst, fromSecond)
 	if err != nil {
 		log.Println(err)
 	}
@@ -29,69 +89,29 @@ func DiscountFinder(store db.Store) error {
 		log.Println(err)
 	}
 
-	// iterating over fromOnSale slice to storing elements in table on_sale
+	return fromOnSale, nil
+}
+
+func Discounter(store db.Store) error {
+	fromOnSale, err := uniquedForStore(store)
+	if err != nil {
+		log.Println(err)
+	}
+
+	fromFirst, err := getInfoFromProduct(store)
+	if err != nil {
+		log.Println(err)
+	}
+
 	for i := 0; i < len(fromOnSale); i++ {
 		store.StoreOnSale(context.Background(), db.CreateOnSaleParams{
-			Brand:         fromFirst[i].Brand,
-			Link:          fromFirst[i].Link,
-			Price:         fromSecond[i].Price,
+			Brand:         fromOnSale[i].Brand,
+			Link:          fromOnSale[i].Link,
+			Price:         fromOnSale[i].Price,
 			PreviousPrice: fromFirst[i].Price,
 		})
-
-		fmt.Println("The product is at discount")
 	}
 
 	return nil
 
-}
-
-// collector trying to collect product from first table and storing products into slice
-func collector(store db.Store) ([]ProductFromFirst, []ProductForReview, *colly.Collector, error) {
-	firstProducts, err := getInfoFromProduct(store)
-	if err != nil {
-		fmt.Println("cannot get first Products", err)
-	}
-
-	Collector := colly.NewCollector(
-		colly.AllowedDomains("trendyol.com", "www.trendyol.com"),
-		colly.MaxDepth(0),
-	)
-
-	Collector.Limit(&colly.LimitRule{Parallelism: 1})
-
-	for _, b := range firstProducts {
-		collector := Collector
-		collector.OnHTML(".container-right-content", func(e *colly.HTMLElement) {
-			productForReview := ProductForReview{
-				ID:    b.ID,
-				Brand: b.Brand,
-				Link:  b.Link,
-				Price: e.ChildText(".prc-dsc"),
-			}
-			ProductsForReview = append(ProductsForReview, productForReview)
-		})
-
-		collector.Visit(b.Link)
-	}
-
-	return firstProducts, ProductsForReview, Collector, nil
-}
-
-// differences check the price difference between first price and reviewed price
-func differences(fromFirst []ProductFromFirst, fromSecond []ProductForReview) ([]ProductOnSale, error) {
-
-	for i := 0; i < len(fromFirst) && i < len(fromSecond); i++ {
-		//in case of second price is less than first price store product into on_sale table
-		if fromFirst[i].Price > fromSecond[i].Price {
-			productsOnSale := ProductOnSale{
-				ID:    fromFirst[i].ID,
-				Brand: fromFirst[i].Brand,
-				Link:  fromFirst[i].Link,
-				Price: fromSecond[i].Price,
-			}
-			ProductsOnSale = append(ProductsOnSale, productsOnSale)
-		}
-	}
-
-	return ProductsOnSale, nil
 }

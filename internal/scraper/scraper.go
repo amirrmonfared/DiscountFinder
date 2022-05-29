@@ -9,37 +9,42 @@ import (
 	"github.com/gocolly/colly"
 )
 
-//Scraper starts scraping on webpage and stores products on first product table.
+var (
+	allowedURL1     string        = "trendyol.com"
+	allowedURL2     string        = "www.trendyol.com"
+	URL             string        = "https://trendyol.com"
+	sectionTag      string        = ".p-card-wrppr"
+	productTitleTag string        = ".prdct-desc-cntnr-wrppr span"
+	linkTag         string        = ".p-card-chldrn-cntnr a"
+	priceTag        string        = ".prc-box-dscntd"
+	scrapTime       time.Duration = 50 * time.Second
+)
+
+var (
+	Products          = make([]db.Product, 0, 200)
+	ProductsForReview = make([]db.Product, 0, 200)
+	ProductsOnSale    = make([]db.OnSale, 0, 200)
+)
+
 func Scraper(webPage string, store db.Store) (*colly.Collector, error) {
 	imFalse := false
+	imTrue := true
 
-	// Instantiate default collector
 	collector := colly.NewCollector(
-		colly.AllowedDomains("trendyol.com", "www.trendyol.com"),
+		colly.AllowedDomains(allowedURL1, allowedURL2),
 		colly.MaxDepth(2),
 	)
 
-	// On every a element which has attribute call callback and store elemnts in database
-	collector.OnHTML(".p-card-wrppr", func(e *colly.HTMLElement) {
-		products := Product{
-			Brand: e.ChildAttr(".prdct-desc-cntnr-wrppr span", "title"),
-			Link:  "https://trendyol.com" + e.ChildAttr(".p-card-chldrn-cntnr a", "href"),
-			Price: e.ChildText(".prc-box-dscntd"),
-		}
-		Products = append(Products, products)
+	collector.OnHTML(sectionTag, func(e *colly.HTMLElement) {
+		products := addProductToSlice(e)
 
-		for _, i := range Products {
-			store.StoreProduct(context.Background(), db.StoreProductParams{
-				Brand: i.Brand,
-				Link:  i.Link,
-				Price: i.Price,
-			})
-			//to remove last element in slice
-			removeProduct()
+		for _, p := range products {
+			storeProduct(store, p)
+			removeProductFromSlice()
 		}
 	})
 
-	time.AfterFunc(30*time.Second, func() {
+	time.AfterFunc(scrapTime, func() {
 		imFalse = true
 	})
 
@@ -48,21 +53,17 @@ func Scraper(webPage string, store db.Store) (*colly.Collector, error) {
 		e.Request.Visit(e.Attr("href"))
 	})
 
-	collector.OnResponse(func(r *colly.Response) {
-	})
-
-	collector.OnRequest(func(r *colly.Request) {
-		imTrue := true
-		if imFalse == imTrue {
-			panic("exit")
-		}
-	})
-
 	defer func() {
 		if r := recover(); r != nil {
 			log.Println("exit crawl")
 		}
 	}()
+
+	collector.OnRequest(func(r *colly.Request) {
+		if imFalse == imTrue {
+			panic("exit")
+		}
+	})
 
 	// Start scraping on URL
 	collector.Visit(webPage)
@@ -70,7 +71,27 @@ func Scraper(webPage string, store db.Store) (*colly.Collector, error) {
 	return collector, nil
 }
 
-func removeProduct() Product {
+func storeProduct(store db.Store, p db.Product) {
+	store.StoreProduct(context.Background(), db.StoreProductParams{
+		Brand: p.Brand,
+		Link:  p.Link,
+		Price: p.Price,
+	})
+}
+
+func addProductToSlice(e *colly.HTMLElement) []db.Product {
+	products := db.Product{
+		Brand: e.ChildAttr(productTitleTag, "title"),
+		Link:  URL + e.ChildAttr(linkTag, "href"),
+		Price: e.ChildText(priceTag),
+	}
+
+	Products = append(Products, products)
+
+	return Products
+}
+
+func removeProductFromSlice() db.Product {
 	l := len(Products) - 1
 	toRemove := Products[l]
 	Products = Products[:l]
