@@ -7,6 +7,7 @@ import (
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
+	"github.com/amirrmonfared/DiscountFinder/internal/tools"
 	"github.com/gocolly/colly"
 	"github.com/jasonlvhit/gocron"
 )
@@ -37,13 +38,13 @@ func RunBot(store db.Store) {
 
 func RunRemoveFirst(store db.Store) {
 	log.Println("First product remover started")
-	scrap.ProductRemover(store)
+	tools.ProductRemover(store)
 	log.Println("RemoveFirst Done!")
 }
 
 func RunRemoveOnSale(store db.Store) {
 	log.Println("OnSale remover started")
-	scrap.OnSaleRemover(store)
+	tools.OnSaleRemover(store)
 	log.Println("RemoveOnSale Done!")
 }
 

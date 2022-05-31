@@ -1,4 +1,4 @@
-package scrap
+package tools
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 )
 
-func getInfoFromProduct(store db.Store) ([]db.Product, error) {
+func GetInfoFromProduct(store db.Store) ([]db.Product, error) {
 
 	length, err := store.GetLengthOfProducts(context.Background())
 	if err != nil {
@@ -25,7 +25,7 @@ func getInfoFromProduct(store db.Store) ([]db.Product, error) {
 	return listFirst, nil
 }
 
-func getInfoFromOnSale(store db.Store) ([]db.OnSale, error) {
+func GetInfoFromOnSale(store db.Store) ([]db.OnSale, error) {
 	length, err := store.GetLengthOnSale(context.Background())
 	if err != nil {
 		fmt.Println(err)

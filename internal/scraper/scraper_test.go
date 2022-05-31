@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/gocolly/colly"
-	_ "github.com/lib/pq"
 )
 
 var Ts = newTestServer()
@@ -45,7 +44,7 @@ func TestCollectorOnHTML(t *testing.T) {
 	ts := Ts
 	defer ts.Close()
 
-	c, err := Scraper(ts.URL, TestStore)
+	c, err := Scraper(ts.URL, testStore)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -1,4 +1,4 @@
-package scrap
+package tools
 
 import (
 	"database/sql"

@@ -6,17 +6,18 @@ import (
 	"log"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
+	"github.com/amirrmonfared/DiscountFinder/internal/tools"
 	"github.com/gocolly/colly"
 )
 
 var (
-	reviewSectionTag string        = ".container-right-content"
-	reviewPriceTag   string        = ".prc-dsc"
+	reviewSectionTag string = ".container-right-content"
+	reviewPriceTag   string = ".prc-dsc"
 )
 
 // reviwer review product from product table and storing products into slice
 func reviwer(store db.Store) ([]db.Product, *colly.Collector, error) {
-	firstProducts, err := getInfoFromProduct(store)
+	firstProducts, err := tools.GetInfoFromProduct(store)
 	if err != nil {
 		fmt.Println("cannot get first Products", err)
 	}
@@ -70,12 +71,12 @@ func uniquedForStore(store db.Store) ([]db.OnSale, error) {
 	if err != nil {
 		log.Println(err)
 	}
-	fromSecond, err := uniqueReview(review)
+	fromSecond, err := tools.UniqueReview(review)
 	if err != nil {
 		log.Println(err)
 	}
 
-	fromFirst, err := getInfoFromProduct(store)
+	fromFirst, err := tools.GetInfoFromProduct(store)
 	if err != nil {
 		log.Println(err)
 	}
@@ -84,7 +85,7 @@ func uniquedForStore(store db.Store) ([]db.OnSale, error) {
 	if err != nil {
 		log.Println(err)
 	}
-	fromOnSale, err := uniqueOnSale(onSale)
+	fromOnSale, err := tools.UniqueOnSale(onSale)
 	if err != nil {
 		log.Println(err)
 	}
@@ -98,7 +99,7 @@ func Discounter(store db.Store) error {
 		log.Println(err)
 	}
 
-	fromFirst, err := getInfoFromProduct(store)
+	fromFirst, err := tools.GetInfoFromProduct(store)
 	if err != nil {
 		log.Println(err)
 	}
