@@ -13,6 +13,8 @@ import (
 var (
 	reviewSectionTag string = ".container-right-content"
 	reviewPriceTag   string = ".prc-dsc"
+	ProductsForReview = make([]db.Product, 0, 200)
+	ProductsOnSale    = make([]db.OnSale, 0, 200)
 )
 
 // reviwer review product from product table and storing products into slice

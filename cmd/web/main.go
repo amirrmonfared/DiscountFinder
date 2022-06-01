@@ -35,7 +35,7 @@ func main() {
 	}
 
 	go RunScrap(webPage, store)
-	go RunBot(store)
+	go RunTelegramBot(store)
 	go cronJob(store)
 
 	err = server.Start(config.ServerAddress)

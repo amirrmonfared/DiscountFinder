@@ -8,7 +8,6 @@ import (
 )
 
 func GetInfoFromProduct(store db.Store) ([]db.Product, error) {
-
 	length, err := store.GetLengthOfProducts(context.Background())
 	if err != nil {
 		fmt.Println(err)

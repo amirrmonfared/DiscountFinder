@@ -8,17 +8,16 @@ import (
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
 	"github.com/amirrmonfared/DiscountFinder/internal/tools"
-	"github.com/gocolly/colly"
 	"github.com/jasonlvhit/gocron"
 )
 
-func RunScrap(webPage string, store db.Store) (*colly.Collector, error) {
+func RunScrap(webPage string, store db.Store) error {
 	log.Println("Scrapper started")
-	scrap, err := scrap.Scraper(webPage, store)
+	err := scrap.ScrapBot(webPage, store)
 	if err != nil {
 		fmt.Println(err)
 	}
-	return scrap, nil
+	return nil
 }
 
 func RunDiscounter(store db.Store) error {
@@ -31,8 +30,8 @@ func RunDiscounter(store db.Store) error {
 	return nil
 }
 
-func RunBot(store db.Store) {
-	log.Println("Bot started")
+func RunTelegramBot(store db.Store) {
+	log.Println("Telegram Bot started")
 	telegram.Bot(store)
 }
 
