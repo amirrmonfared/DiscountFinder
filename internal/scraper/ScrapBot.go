@@ -18,7 +18,6 @@ var (
 	linkTag         string        = ".p-card-chldrn-cntnr a"
 	priceTag        string        = ".prc-box-dscntd"
 	scrapTime       time.Duration = 50 * time.Second
-	Products                      = make([]db.Product, 0, 200)
 	imFalse                       = false
 	imTrue                        = true
 )
@@ -30,7 +29,7 @@ func scrapBotConfig() (*colly.Collector, error) {
 		colly.MaxDepth(2),
 	)
 
-	time.AfterFunc(10*time.Second, func() {
+	time.AfterFunc(scrapTime, func() {
 		imFalse = true
 	})
 
@@ -60,15 +59,12 @@ func ScrapBot(webPage string, store db.Store) error {
 	}
 
 	collector.OnHTML(sectionTag, func(e *colly.HTMLElement) {
-		products, err := addProductToSlice(e)
-		if err != nil {
-			log.Println("cannot add products to slice")
+		product := db.Product{
+			Brand: e.ChildAttr(productTitleTag, "title"),
+			Link:  URL + e.ChildAttr(linkTag, "href"),
+			Price: e.ChildText(priceTag),
 		}
-
-		for _, p := range products {
-			storeProduct(store, p)
-			removeProductFromSlice()
-		}
+		storeProduct(store, product)
 	})
 
 	collector.Visit(webPage)
@@ -76,34 +72,12 @@ func ScrapBot(webPage string, store db.Store) error {
 	return nil
 }
 
-func addProductToSlice(e *colly.HTMLElement) ([]db.Product, error) {
-	products := db.Product{
-		Brand: e.ChildAttr(productTitleTag, "title"),
-		Link:  URL + e.ChildAttr(linkTag, "href"),
-		Price: e.ChildText(priceTag),
-	}
-
-	Products = append(Products, products)
-
-	return Products, nil
-}
-
-func removeProductFromSlice() (db.Product, error) {
-	l := len(Products) - 1
-	toRemove := Products[l]
-	Products = Products[:l]
-	return toRemove, nil
-}
-
 func storeProduct(store db.Store, p db.Product) (db.StoreProductResult, error) {
-	result, err := store.StoreProduct(context.Background(), db.StoreProductParams{
+	result, _ := store.StoreProduct(context.Background(), db.StoreProductParams{
 		Brand: p.Brand,
 		Link:  p.Link,
 		Price: p.Price,
 	})
-	if err != nil {
-		log.Println("Cannot store on product", err)
-	}
 
 	return result, nil
 }

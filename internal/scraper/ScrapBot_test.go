@@ -5,9 +5,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	mockdb "github.com/amirrmonfared/DiscountFinder/db/mock"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/amirrmonfared/DiscountFinder/util"
 	"github.com/gocolly/colly"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/require"
 )
 
@@ -75,10 +77,14 @@ func TestScrapBotConfig(t *testing.T) {
 }
 
 func TestScrapBot(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	store := mockdb.NewMockStore(ctrl)
 	ts := Ts
 	defer ts.Close()
 
-	err := ScrapBot(ts.URL+"/html", testStore)
+	err := ScrapBot(ts.URL+"/html", store)
 	require.NoError(t, err)
 }
 
@@ -94,17 +100,4 @@ func TestStoreProduct(t *testing.T) {
 	require.Equal(t, p.Brand, result.Product.Brand)
 	require.Equal(t, p.Link, result.Product.Link)
 	require.Equal(t, p.Price, result.Product.Price)
-}
-
-func TestRemoveProductFromSlice(t *testing.T) {
-	p := db.Product{
-		Brand: util.RandomString(5),
-		Link:  util.RandomLink(),
-		Price: util.RandomPriceString(4),
-	}
-	Products = append(Products, p)
-	product, err := removeProductFromSlice()
-	require.NoError(t, err)
-	require.Equal(t, product, p)
-	require.Empty(t, Products)
 }

@@ -37,6 +37,7 @@ func main() {
 	go RunScrap(webPage, store)
 	go RunTelegramBot(store)
 	go cronJob(store)
+	
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
@@ -44,5 +45,4 @@ func main() {
 	}
 
 	defer conn.Close()
-
 }

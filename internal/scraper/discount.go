@@ -18,7 +18,7 @@ var (
 )
 
 // reviwer review product from product table and storing products into slice
-func reviwer(store db.Store) ([]db.Product, *colly.Collector, error) {
+func Reviwer(store db.Store) ([]db.Product, *colly.Collector, error) {
 	firstProducts, err := tools.GetInfoFromProduct(store)
 	if err != nil {
 		fmt.Println("cannot get first Products", err)
@@ -39,6 +39,7 @@ func reviwer(store db.Store) ([]db.Product, *colly.Collector, error) {
 				Price: e.ChildText(reviewPriceTag),
 			}
 			ProductsForReview = append(ProductsForReview, productForReview)
+			fmt.Println(productForReview)
 
 		})
 
@@ -48,7 +49,7 @@ func reviwer(store db.Store) ([]db.Product, *colly.Collector, error) {
 	return ProductsForReview, collector, nil
 }
 
-func discountFinder(fromFirst []db.Product, fromSecond []db.Product) ([]db.OnSale, error) {
+func DiscountFinder(fromFirst []db.Product, fromSecond []db.Product) ([]db.OnSale, error) {
 
 	for i := 0; i < len(fromFirst) && i < len(fromSecond); i++ {
 		if fromFirst[i].Price > fromSecond[i].Price {
@@ -69,7 +70,7 @@ func discountFinder(fromFirst []db.Product, fromSecond []db.Product) ([]db.OnSal
 }
 
 func uniquedForStore(store db.Store) ([]db.OnSale, error) {
-	review, _, err := reviwer(store)
+	review, _, err := Reviwer(store)
 	if err != nil {
 		log.Println(err)
 	}
@@ -83,7 +84,7 @@ func uniquedForStore(store db.Store) ([]db.OnSale, error) {
 		log.Println(err)
 	}
 
-	onSale, err := discountFinder(fromFirst, fromSecond)
+	onSale, err := DiscountFinder(fromFirst, fromSecond)
 	if err != nil {
 		log.Println(err)
 	}
