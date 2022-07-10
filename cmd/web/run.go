@@ -1,44 +1,58 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 
+	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	scrap "github.com/amirrmonfared/DiscountFinder/internal/scraper"
 	"github.com/amirrmonfared/DiscountFinder/internal/telegram"
-	"github.com/gocolly/colly"
+	"github.com/amirrmonfared/DiscountFinder/internal/tools"
+	"github.com/jasonlvhit/gocron"
 )
 
-func RunScrap(webPage string, conn *sql.DB) (*colly.Collector, error) {
+func RunScrap(webPage string, store db.Store) error {
 	log.Println("Scrapper started")
-	scrap, err := scrap.Scraper(webPage, conn)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return scrap, nil
-}
-
-func RunDiscountFinder(conn *sql.DB) error {
-	log.Println("DiscountFinder started")
-	err := scrap.DiscountFinder(conn)
+	err := scrap.ScrapBot(webPage, store)
 	if err != nil {
 		fmt.Println(err)
 	}
 	return nil
 }
 
-func RunBot(conn *sql.DB) {
-	log.Println("Bot started")
-	telegram.Bot(conn)
+func RunReviewer(store db.Store) error {
+	log.Println("Reviewer started")
+	err := scrap.ReviewerBot(store)
+	if err != nil {
+		fmt.Println(err)
+	}
+	log.Println("Reviewer Done!")
+	return nil
 }
 
-func RunRemoveFirst(conn *sql.DB) {
+func RunTelegramBot(store db.Store) {
+	log.Println("Telegram Bot started")
+	telegram.Bot(store)
+}
+
+func RunRemoveFirst(store db.Store) {
 	log.Println("First product remover started")
-	scrap.ProductRemover(conn)
+	tools.ProductRemover(store)
+	log.Println("RemoveFirst Done!")
 }
 
-func RunRemoveOnSale(conn *sql.DB) {
+func RunRemoveOnSale(store db.Store) {
 	log.Println("OnSale remover started")
-	scrap.OnSaleRemover(conn)
+	tools.OnSaleRemover(store)
+	log.Println("RemoveOnSale Done!")
+}
+
+func cronJob(store db.Store) {
+
+	gocron.Every(10).Minutes().Do(RunScrap, webPage, store)
+	gocron.Every(20).Minutes().Do(RunReviewer, store)
+	gocron.Every(120).Minutes().Do(RunRemoveFirst, store)
+	gocron.Every(120).Minutes().Do(RunRemoveOnSale, store)
+
+	<-gocron.Start()
 }

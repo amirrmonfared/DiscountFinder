@@ -1,4 +1,4 @@
-package scrap
+package tools
 
 import (
 	"database/sql"
@@ -10,6 +10,8 @@ import (
 	"github.com/amirrmonfared/DiscountFinder/util"
 	_ "github.com/lib/pq"
 )
+
+var testQueries *db.Queries
 var testDB *sql.DB
 var testStore db.Store
 
@@ -25,6 +27,8 @@ func TestMain(m *testing.M) {
 	}
 
 	testStore = db.NewStore(testDB)
+
+	testQueries = db.New(testDB)
 
 	os.Exit(m.Run())
 }

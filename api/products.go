@@ -10,33 +10,33 @@ import (
 	"github.com/lib/pq"
 )
 
-type createFirstProductRequest struct {
+type createProductRequest struct {
 	Brand string `json:"brand"`
 	Link  string `json:"link"`
 	Price string `json:"price"`
 }
 
-type createFirstProductRespones struct {
-	Brand string `json:"brand"`
-	Link  string `json:"link"`
-	Price string `json:"price"`
+type createProductRespones struct {
+	Brand     string    `json:"brand"`
+	Link      string    `json:"link"`
+	Price     string    `json:"price"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-func (server *Server) createFirstProduct(ctx *gin.Context) {
-	var req createFirstProductRequest
+func (server *Server) createProduct(ctx *gin.Context) {
+	var req createProductRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	arg := db.CreateFirstProductParams{
+	arg := db.StoreProductParams{
 		Brand: req.Brand,
-		Link: req.Link,
+		Link:  req.Link,
 		Price: req.Price,
 	}
 
-	product, err := server.store.CreateFirstProduct(ctx, arg)
+	product, err := server.store.StoreProduct(ctx, arg)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			switch pqErr.Code.Name() {
@@ -49,11 +49,11 @@ func (server *Server) createFirstProduct(ctx *gin.Context) {
 		return
 	}
 
-	rsp := createFirstProductRespones{
-		Brand: product.Brand,
-		Link: product.Link,
-		Price: product.Price,
-		CreatedAt: product.CreatedAt,
+	rsp := createProductRespones{
+		Brand:     product.Product.Brand,
+		Link:      product.Product.Link,
+		Price:     product.Product.Price,
+		CreatedAt: product.Product.CreatedAt,
 	}
 
 	ctx.JSON(http.StatusOK, rsp)
@@ -63,14 +63,14 @@ type getProductRequest struct {
 	ID int64 `uri:"id" binding:"required,min=1"`
 }
 
-func (server *Server) getFirstProduct(ctx *gin.Context) {
+func (server *Server) getProduct(ctx *gin.Context) {
 	var req getProductRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	product, err := server.store.GetFirstProduct(ctx, req.ID)
+	product, err := server.store.GetProduct(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -89,19 +89,19 @@ type listProductRequest struct {
 	PageSize int32 `form:"page_size" binding:"required,min=5,max=10"`
 }
 
-func (server *Server) listFirstsProduct(ctx *gin.Context) {
+func (server *Server) listProduct(ctx *gin.Context) {
 	var req listProductRequest
 	if err := ctx.ShouldBindQuery(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 
-	arg := db.ListFirstProductParams{
+	arg := db.ListProductParams{
 		Limit:  req.PageSize,
 		Offset: (req.PageID - 1) * req.PageSize,
 	}
 
-	product, err := server.store.ListFirstProduct(ctx, arg)
+	product, err := server.store.ListProduct(ctx, arg)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

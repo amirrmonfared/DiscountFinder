@@ -8,17 +8,17 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateProduct(t *testing.T) {
+func TestStoreProduct(t *testing.T) {
 	store := NewStore(testDB)
 
 	errs := make(chan error)
-	results := make(chan CreateProductResult)
+	results := make(chan StoreProductResult)
 
 	n := 5
 
 	for i := 0; i < n; i++ {
 		go func() {
-			result, err := store.CreateProduct(context.Background(), CreateFirstProductParams{
+			result, err := store.StoreProduct(context.Background(), StoreProductParams{
 				Brand: util.RandomString(4),
 				Link:  util.RandomLink(),
 				Price: util.RandomPriceString(3),
@@ -38,19 +38,33 @@ func TestCreateProduct(t *testing.T) {
 	}
 }
 
-
-func TestLengthOfFirst(t *testing.T) {
+func TestStoreOnSale(t *testing.T) {
 	store := NewStore(testDB)
 
-	result, err := store.LengthOfFirst(context.Background())
-	require.NoError(t, err)
-	require.NotZero(t, result)
-}
+	errs := make(chan error)
+	results := make(chan CreateOnSaleResult)
 
-func TestLengthOfOnSale(t *testing.T) {
-	store := NewStore(testDB)
+	n := 5
 
-	result, err := store.LengthOfOnSale(context.Background())
-	require.NoError(t, err)
-	require.NotZero(t, result)
+	for i := 0; i < n; i++ {
+		go func() {
+			result, err := store.StoreOnSale(context.Background(), CreateOnSaleParams{
+				Brand:         util.RandomString(4),
+				Link:          util.RandomLink(),
+				Price:         util.RandomPriceString(3),
+				PreviousPrice: util.RandomPriceString(3),
+			})
+
+			errs <- err
+			results <- result
+		}()
+	}
+
+	for i := 0; i < n; i++ {
+		err := <-errs
+		require.NoError(t, err)
+
+		result := <-results
+		require.NotEmpty(t, result)
+	}
 }

@@ -10,14 +10,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateRandomRow(t *testing.T) First {
-	arg := CreateFirstProductParams{
+func CreateRandomRow(t *testing.T) Product {
+	arg := CreateProductParams{
 		Brand: util.RandomString(5),
 		Link:  util.RandomLink(),
 		Price: util.RandomPriceString(4),
 	}
 
-	product, err := testQueries.CreateFirstProduct(context.Background(), arg)
+	product, err := testQueries.CreateProduct(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, product)
 
@@ -35,9 +35,9 @@ func TestCreateRow(t *testing.T) {
 	CreateRandomRow(t)
 }
 
-func TestGetFirstProduct(t *testing.T) {
+func TestGetProduct(t *testing.T) {
 	row1 := CreateRandomRow(t)
-	row2, err := testQueries.GetFirstProduct(context.Background(), row1.ID)
+	row2, err := testQueries.GetProduct(context.Background(), row1.ID)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -48,15 +48,15 @@ func TestGetFirstProduct(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestUpdateFirstProduct(t *testing.T) {
+func TestUpdateProduct(t *testing.T) {
 	row1 := CreateRandomRow(t)
 
-	arg := UpdateFirstProductParams{
+	arg := UpdateProductParams{
 		ID:    row1.ID,
 		Price: util.RandomPriceString(4),
 	}
 
-	row2, err := testQueries.UpdateFirstProduct(context.Background(), arg)
+	row2, err := testQueries.UpdateProduct(context.Background(), arg)
 	require.NoError(t, err)
 	require.NotEmpty(t, row2)
 
@@ -67,12 +67,12 @@ func TestUpdateFirstProduct(t *testing.T) {
 	require.WithinDuration(t, row1.CreatedAt, row2.CreatedAt, time.Second)
 }
 
-func TestDeleteFirstProduct(t *testing.T) {
+func TestDeleteProduct(t *testing.T) {
 	row1 := CreateRandomRow(t)
-	err := testQueries.DeleteFirstProduct(context.Background(), row1.ID)
+	err := testQueries.DeleteProduct(context.Background(), row1.ID)
 	require.NoError(t, err)
 
-	account2, err := testQueries.GetFirstProduct(context.Background(), row1.ID)
+	account2, err := testQueries.GetProduct(context.Background(), row1.ID)
 	require.Error(t, err)
 	require.EqualError(t, err, sql.ErrNoRows.Error())
 	require.Empty(t, account2)
@@ -83,12 +83,12 @@ func TestListFirst(t *testing.T) {
 		CreateRandomRow(t)
 	}
 
-	arg := ListFirstProductParams{
+	arg := ListProductParams{
 		Limit:  5,
 		Offset: 5,
 	}
 
-	accounts, err := testQueries.ListFirstProduct(context.Background(), arg)
+	accounts, err := testQueries.ListProduct(context.Background(), arg)
 	require.NoError(t, err)
 	require.Len(t, accounts, 5)
 
@@ -102,21 +102,8 @@ func TestGetLengthOfFirst(t *testing.T) {
 		CreateRandomRow(t)
 	}
 
-	length, err := testQueries.GetLengthOfFirst(context.Background())
+	length, err := testQueries.GetLengthOfProducts(context.Background())
 	require.NoError(t, err)
 	require.NotZero(t, length)
 
-}
-
-func TestGetFirstProductForUpdate(t *testing.T) {
-	product := CreateRandomRow(t)
-	product2, err := testQueries.GetFirstProductForUpdate(context.Background(), product.ID)
-	require.NoError(t, err)
-	require.NotEmpty(t, product2)
-
-	require.Equal(t, product.ID, product2.ID)
-	require.Equal(t, product.Brand, product2.Brand)
-	require.Equal(t, product.Link, product2.Link)
-	require.Equal(t, product.Price, product2.Price)
-	require.WithinDuration(t, product.CreatedAt, product2.CreatedAt, time.Second)
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/amirrmonfared/DiscountFinder/api"
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/amirrmonfared/DiscountFinder/util"
-	"github.com/jasonlvhit/gocron"
 	_ "github.com/lib/pq"
 )
 
@@ -35,15 +34,9 @@ func main() {
 		fmt.Println("cannot connect to server", err)
 	}
 
-	go RunScrap(webPage, conn)
-	go RunBot(conn)
-
-	gocron.Every(2).Minutes().Do(RunScrap, webPage, conn)
-	gocron.Every(1).Minutes().Do(RunDiscountFinder, conn)
-	gocron.Every(1).Minutes().Do(RunRemoveFirst, conn)
-	gocron.Every(1).Minutes().Do(RunRemoveOnSale, conn)
-
-	<- gocron.Start()
+	go RunScrap(webPage, store)
+	go RunTelegramBot(store)
+	go cronJob(store)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
@@ -51,5 +44,4 @@ func main() {
 	}
 
 	defer conn.Close()
-
 }

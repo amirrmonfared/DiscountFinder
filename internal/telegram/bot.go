@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"strings"
@@ -15,8 +14,7 @@ import (
 
 const IMTRUE = true
 
-func Bot(conn *sql.DB) {
-	store := db.NewStore(conn)
+func Bot(store db.Store) {
 
 	config, err := util.LoadConfig(".")
 	if err != nil {
@@ -46,14 +44,14 @@ func Bot(conn *sql.DB) {
 	b.Handle("/discount", func(ctx tele.Context) error {
 		if IMTRUE == true {
 			for i := 0; i < int(length); i++ {
-				list, err := getListOfOnSale(conn, int32(i))
+				list, err := getListOfOnSale(store, int32(i))
 				if err != nil {
 					log.Println(err)
 					ctx.Send("error")
 				}
 
 				ctx.Send(list)
-			} 
+			}
 		}
 		return ctx.Send("Finish")
 	})
@@ -61,23 +59,22 @@ func Bot(conn *sql.DB) {
 	b.Start()
 }
 
-func getListOfOnSale(conn *sql.DB, offset int32) (string, error) {
+func getListOfOnSale(store db.Store, offset int32) (string, error) {
 	var result []string
-	store := db.NewStore(conn)
 
 	list, err := store.ListOnSale(context.Background(), db.ListOnSaleParams{
-		Limit: 10,
+		Limit:  10,
 		Offset: offset,
 	})
 	if err != nil {
 		log.Println(err)
 	}
 
-	for _, j := range list{
-		result = append(result,"next", j.Brand, j.Link, j.Price)
+	for _, j := range list {
+		result = append(result, "next", j.Brand, j.Link, j.Price)
 	}
 
 	strList := strings.Join(result, "  ")
 
 	return strList, nil
-} 
+}
