@@ -86,21 +86,22 @@ func TestDiscountFinder(t *testing.T) {
 
 	products := toCheckPrice{reviewedProduct: product2, productForReview: product1}
 
-	product, err := discountFinder(products, store)
+	err := discountFinder(products, store)
 	require.NoError(t, err)
-	require.Equal(t, product, product1)
 }
 
-// func TestStoreOnSale(t *testing.T) {
-// 	ctrl := gomock.NewController(t)
-// 	defer ctrl.Finish()
+func TestStoreOnSale(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
-// 	store := mockdb.NewMockStore(ctrl)
+	store := mockdb.NewMockStore(ctrl)
+	store.EXPECT().StoreOnSale(gomock.Any(), gomock.Any())
 
-// 	onSale := db.OnSale{
-// 		Brand: util.RandomString(3),
-// 		Link:  util.RandomLink(),
-// 		Price: util.RandomPriceString(3),
-// 	}
-// 	err := storeOnSale(store)
-// }
+	onSale := db.OnSale{
+		Brand: util.RandomString(3),
+		Link:  util.RandomLink(),
+		Price: util.RandomPriceString(3),
+	}
+	err := storeOnSale(store, onSale)
+	require.NoError(t, err)
+}

@@ -1,12 +1,17 @@
 package scrap
 
 import (
-	"fmt"
+	"context"
 	"log"
 
 	db "github.com/amirrmonfared/DiscountFinder/db/sqlc"
 	"github.com/amirrmonfared/DiscountFinder/internal/tools"
 	"github.com/gocolly/colly"
+)
+
+var (
+	reviewSectionTag string = ".container-right-content"
+	reviewPriceTag   string = ".prc-dsc"
 )
 
 type toCheckPrice struct {
@@ -37,8 +42,11 @@ func ReviewerBot(store db.Store) error {
 
 	for _, productForReview := range productsForReview {
 		reviewedProduct, _ := htmlCollector(collector, productForReview)
-		products := toCheckPrice{reviewedProduct: reviewedProduct, productForReview: productForReview}
-		discountFinder(products, store)
+		toCheck := toCheckPrice{reviewedProduct: reviewedProduct, productForReview: productForReview}
+		err := discountFinder(toCheck, store)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	return nil
@@ -57,20 +65,28 @@ func htmlCollector(collector *colly.Collector, product db.Product) (db.Product, 
 	return productForReview, nil
 }
 
-func discountFinder(t toCheckPrice, store db.Store) (db.Product, error) {
+func discountFinder(t toCheckPrice, store db.Store) error {
 	firstPrice := t.productForReview.Price
 	secondPrice := t.reviewedProduct.Price
 
 	if isOnSale(firstPrice, secondPrice) {
-		fmt.Println("first", firstPrice, secondPrice)
-		return t.productForReview, nil
+		product := db.OnSale{
+			Brand:         t.productForReview.Brand,
+			Link:          t.productForReview.Link,
+			Price:         t.reviewedProduct.Price,
+			PreviousPrice: t.productForReview.Price,
+		}
+		err := storeOnSale(store, product)
+		if err != nil {
+			return err
+		}
+		return nil
 	}
 	if priceUpdated(firstPrice, secondPrice) {
-		fmt.Println("second", firstPrice, secondPrice)
-		return t.productForReview, nil
+
 	}
 
-	return t.productForReview, nil
+	return nil
 }
 
 func isOnSale(firstPrice, secondPrice string) bool {
@@ -87,4 +103,16 @@ func priceUpdated(firstPrice, secondPrice string) bool {
 	return false
 }
 
+func storeOnSale(store db.Store, pr db.OnSale) error {
+	_, err := store.StoreOnSale(context.Background(), db.CreateOnSaleParams{
+		Brand:         pr.Brand,
+		Link:          pr.Link,
+		Price:         pr.Price,
+		PreviousPrice: pr.PreviousPrice,
+	})
+	if err != nil {
+		return err
+	}
 
+	return nil
+}
