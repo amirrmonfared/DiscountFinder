@@ -34,10 +34,9 @@ func main() {
 		fmt.Println("cannot connect to server", err)
 	}
 
-	// go RunScrap(webPage, store)
-	// go RunTelegramBot(store)
-	// go cronJob(store)
-	go RunReviewer(store)
+	go RunScrap(webPage, store)
+	go RunTelegramBot(store)
+	go cronJob(store)
 
 	err = server.Start(config.ServerAddress)
 	if err != nil {
